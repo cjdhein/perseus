@@ -1,0 +1,17 @@
+{
+  "name": "server_for_web_crawler",
+  "version": "1.0.0",
+  "description": "Server to interact with the web crawler",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yoav Gil",
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "^4.13.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.11.3",
+    "mysql": "^2.8.0"
+  }
+}
