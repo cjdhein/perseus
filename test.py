@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup as bs
 from urlparse import urlparse
 import urllib2
 
-url = "https://cmsdk.com/python/how-to-get-full-web-address-with-beautifulsoup.html"
+url = "https://www.nytimes.com"
 
 html = urllib2.urlopen(url).read()
 
@@ -37,4 +37,6 @@ for link in all_Links:
         urlToAdd = link['href']
 
     if reqInfo.count((urlToAdd,())) == 0:
-        reqInfo.append({'url':urlToAdd,'title':''})
+        reqInfo.append({'url':urlToAdd})
+
+print reqInfo
