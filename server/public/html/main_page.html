@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- <link rel="stylesheet" href="/css/stylesheet.css" type="text/css"> -->
+	</head>
+	<body>
+		<div id="form">
+			<form>
+				<label for="url">Starting URL: </label>
+				<input type="text" id="url" name="url"><br>
+
+				<label for="search_type">Type of Search: </label>
+				<input type="radio" name="search_type" id="breadth" value="breadth" checked>
+				<label for="breadth">Breadth-First</label>
+				<input type="radio" name="search_type" id="depth" value="depth">
+				<label for="depth">Depth-First</label><br>
+
+				<label for="limit">Page Limit: </label>
+				<input id="limit" type="number" name="limit"><br>
+
+				<label for="keyword">Keyword (optional): </label>
+				<input type="text" id="keyword" name="keyword"><br>
+
+				<input type="submit" name="submit" value="Submit">
+			</form>
+		</div>
+		<script src="/scripts/form_script.js"></script>
+	</body>
+</html>

@@ -3,17 +3,16 @@ var express = require("express");
 var app = express();
 
 app.set("port", 3000);
+app.use(express.static("public"));
 
 app.get("/", function(req, res) {
-	res.type("text/plain");
-	res.send("Welcome to the main page!");
+	res.sendFile(__dirname + "/public/html/main_page.html");
 });
 
-/*
-app.post("/form-data", function(req, res) {
+app.post("/", function(req, res) {
 	res.type("application/xml");
+	res.send("Post successfully received.")
 });
-*/
 
 app.use(function(req, res) {
 	res.type("text/plain");
@@ -23,7 +22,7 @@ app.use(function(req, res) {
 
 app.use(function(err, req, res, next) {
 	console.error(err.stack);
-	res.type("plain/text");
+	res.type("text/plain");
 	res.status(500);
 	res.send("500 - Server Error");
 });
