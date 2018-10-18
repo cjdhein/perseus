@@ -6,7 +6,7 @@ app.set("port", 3000);
 app.use(express.static("public"));
 
 app.get("/", function(req, res) {
-	res.sendFile(__dirname + "/public/html/main_page.html");
+	res.sendFile(__dirname + "/public/html/index.html");
 });
 
 app.post("/", function(req, res) {
