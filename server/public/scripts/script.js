@@ -24,15 +24,27 @@ crawlerApp.config(function($routeProvider) {
 });
 
 crawlerApp.factory('graphData', function() {
-	var graph = {};
+	var graph = {
+		nodes: [],
+		edges: []
+	};
 
 	return {
-    	updateGraph: update,
+    	addNode: addNode,
+    	addEdge: addEdge,
     	getGraph: get
 	};
 
-	function update() {
-		//TODO: update graph
+	function addNode(node) {
+		graph.nodes.push(node);
+	}
+
+	function addEdge(begin, end) {
+		var edge = {
+			from: parseInt(begin),
+			to: parseInt(end)
+		}
+		graph.edges.push(edge);
 	}
 
 	function get() {
@@ -41,17 +53,61 @@ crawlerApp.factory('graphData', function() {
 });
 
 // create the controller and inject Angular's $scope
-crawlerApp.controller('homeController', function($scope) {
+crawlerApp.controller('homeController', function($scope, graphData) {
 	//TODO: Send request to server to retrieve graph from search terms
 
 	//TODO: After receiving request, parse data and update graph service
+	var text = `<data>
+	<page>
+	<id>0</id>
+	<title>Google</title>
+	<url>https://www.google.com/</url>
+</page>
+<page>
+	<id>1</id>
+	<title>Google</title>
+	<url>https://www.google.com/</url>
+	<parent_id>0</parent_id>
+	<keyword />
+</page>
+</data>`;
+
+	var parser = new DOMParser();
+	var xml = parser.parseFromString(text, 'application/xml');
+	var pages = xml.getElementsByTagName('page');
+
+	for(var i = 0; i < pages.length; ++i) {
+		var nodes = pages[i].children;
+		var newNode = {
+			keyword: false
+		};
+		for(var j = 0; j < nodes.length; ++j) {
+			if(nodes[j].nodeName == 'parent_id') {
+				graphData.addEdge(i, nodes[j].innerHTML);
+			}
+			else if(nodes[j].nodeName == 'keyword') {
+				newNode['keyword'] = true;
+			}
+			else {
+				newNode[nodes[j].nodeName] = nodes[j].innerHTML;
+			}
+		}
+
+		graphData.addNode(newNode);
+	}
+
+	console.log(graphData.getGraph());
+
 });
 
-crawlerApp.controller('graphController', function($scope) {
+crawlerApp.controller('graphController', function($scope, graphData) {
 	//TODO: Create node and edges from graph service
+	//var graph = graphData.getGraph();
+	//var nodes = new vis.DataSet(graph.nodes);
+	//var edges = new vis.DataSet(graph.edges);
 
 	var nodes = new vis.DataSet([
-    	{id: 1, label: 'Node 1'},
+    	{id: 1, label: 'Node 1', url: 'www.google.com'},
     	{id: 2, label: 'Node 2'},
     	{id: 3, label: 'Node 3'},
     	{id: 4, label: 'Node 4'},
@@ -97,6 +153,35 @@ crawlerApp.controller('graphController', function($scope) {
 
 	// initialize your network!
 	var network = new vis.Network(container, data, options);
+
+	//Handle node on-click
+	network.on('click', function(properties) {
+		var nodeID = properties.nodes[0];
+
+		if(nodeID) {
+			setTimeout(function(){
+				document.getElementById("popup").style.display = "block";
+				//document.getElementById("pTitle").innerHTML = 
+
+				network.focus(nodeID, {
+					scale: 1.0,
+					animation: true
+				}, 1000);
+			});
+		}
+		else {
+			document.getElementById('popup').style.display = "none";
+		}
+
+	});
+
+	network.on('zoom', function(properties){
+		document.getElementById('popup').style.display = "none";
+	});
+
+	network.on('dragStart', function(properties){
+		document.getElementById('popup').style.display = "none";
+	});
 });
 
 crawlerApp.controller('historyController', function($scope) {

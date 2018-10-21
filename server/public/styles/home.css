@@ -43,6 +43,38 @@ body {
 	right: 15%;
 }
 
+#mynetwork {
+	height: 100%;
+	width: 100%;
+}
+
+#popup {
+	position: absolute;
+	background: #00aabb;
+	border-radius: .4em;
+	display: none;
+	height: 15%;
+	width: 20%;
+	z-index: 100;
+	left: 40%;
+	top: 30%;
+}
+
+#popup:after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-top-color: #00aabb;
+	border-bottom: 0;
+	margin-left: -20px;
+	margin-bottom: -20px;
+	z-index:100;
+}
+
 
 
 
