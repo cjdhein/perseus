@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 from urlparse import urlparse
 import urllib2
+import sys
 from webparser import WebParser
 
 
@@ -25,19 +26,34 @@ class WebCrawler:
             return returnString
         else:
             return "urlDict is empty"
-
+    # Return codes:
+    #   1: good return
+    #   2: hit depth (won't trigger in webcrawler)
+    #   3: found keyword
+    #   4: Error opening URL
     def crawl(self, urlString):
         theSoup = self._fetch(urlString)
-        if (self._parseForUrls(theSoup,urlString) == 1):
+        if type(theSoup) == str:
+            return theSoup
+        if self._parseForUrls(theSoup,urlString):
             print "no links?"
-#        self._parseForKeyword()
+        if self._parseForKeyword(theSoup):
+            return 3
+        else:
+            return 1
         
 
     # fetch the web page and pull all href elements / build urls
     def _fetch(self, urlString):
         # flesh out
         url = urlString
-        html = urllib2.urlopen(url).read()
+        try:
+            html = urllib2.urlopen(url)
+            html = html.read()
+        except:
+            e = sys.exc_info()[1]
+            print("Error " + str(e.code) + ": " + str(e.reason))
+            return("Error " + str(e.code) + ": " + str(e.reason))
         return bs(html,'lxml')
 
         
@@ -47,13 +63,13 @@ class WebCrawler:
         temp = self.parser.parseUrls(soup,urlString)
         self.urlDict = temp
         if len(self.urlDict.keys()) <= 0:
-            return 1 
+            return True 
         else:
-            return 0
+            return False
         
 
-    def _parseForKeyword(self):
-        return 1 #self.parser.parseKeyword(self.keyword)
+    def _parseForKeyword(self, soup):
+        return self.parser.parseKeyword(soup,self.keyword)
     
 
 
