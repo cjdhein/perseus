@@ -1,328 +1,330 @@
 <?xml version="1.0" ?>
 <!-- This is meant to replicate breadth-first search. The starting page has many child pages. -->
 
-<page>
-	<id>0</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-</page>
+<crawler_log>
+	<page>
+		<id>0</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+	</page>
 
-<page>
-	<id>1</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>1</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>2</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>2</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>3</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>3</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>4</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>4</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>5</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>5</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>6</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>6</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>7</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>7</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>8</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>8</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>9</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>9</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>10</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>10</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>11</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>11</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>12</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>12</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>13</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>13</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>14</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>14</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>15</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>15</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>16</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>16</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>17</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>17</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>18</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>18</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>19</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>19</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>20</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>20</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>21</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>21</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>22</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-</page>
+	<page>
+		<id>22</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>0</parent_id>
+	</page>
 
-<page>
-	<id>23</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>23</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>24</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>24</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>25</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>25</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>26</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>26</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>27</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>27</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>28</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>28</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>29</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>29</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>30</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>3</parent_id>
-</page>
+	<page>
+		<id>30</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>3</parent_id>
+	</page>
 
-<page>
-	<id>31</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>31</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
-<page>
-	<id>32</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>32</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
-<page>
-	<id>33</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>33</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
-<page>
-	<id>34</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>34</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
-<page>
-	<id>35</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>35</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
-<page>
-	<id>36</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
-
-
-<page>
-	<id>37</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>36</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
 
-<page>
-	<id>38</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>37</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
 
-<page>
-	<id>39</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>38</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
 
-<page>
-	<id>40</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>7</parent_id>
-</page>
+	<page>
+		<id>39</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
 
-<page>
-	<id>41</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>25</parent_id>
-</page>
+	<page>
+		<id>40</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>7</parent_id>
+	</page>
 
-<page>
-	<id>42</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>25</parent_id>
-</page>
 
-<page>
-	<id>43</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>25</parent_id>
-</page>
+	<page>
+		<id>41</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>25</parent_id>
+	</page>
 
-<page>
-	<id>44</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>25</parent_id>
-</page>
+	<page>
+		<id>42</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>25</parent_id>
+	</page>
 
-<page>
-	<id>45</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>25</parent_id>
-</page>
+	<page>
+		<id>43</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>25</parent_id>
+	</page>
+
+	<page>
+		<id>44</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>25</parent_id>
+	</page>
+
+	<page>
+		<id>45</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+		<parent_id>25</parent_id>
+	</page>
+</crawler_log>

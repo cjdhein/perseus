@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 
-<error>
-	<code>1</code>
-	<text>Cannot find webpage</text>
-</error>
+<crawler_log>
+	<error>
+		<code>1</code>
+		<text>Cannot find webpage</text>
+	</error>
+</crawler_log>

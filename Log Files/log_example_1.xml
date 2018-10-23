@@ -1,15 +1,17 @@
 <?xml version="1.0" ?>
 
-<page>
-	<id>0</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-</page>
+<crawler_log>
+	<page>
+		<id>0</id>
+		<title>Google</title>
+		<url>https://www.google.com/</url>
+	</page>
 
-<page>
-	<id>1</id>
-	<title>This page has a very long title. Check to see if it is displayed properly or truncate as needed.</title>
-	<url>https://www.google.com/search?q=node.js&oq=node.js&aqs=chrome..69i57j69i65j69i61j69i59l3.1112j0j1&sourceid=chrome&ie=UTF-8</url>
-	<parent_id>0</parent_id>
-	<keyword />
-</page>
+	<page>
+		<id>1</id>
+		<title>This page has a very long title. Check to see if it is displayed properly or truncate as needed.</title>
+		<url>https://www.google.com/search?q=node.js&oq=node.js&aqs=chrome..69i57j69i65j69i61j69i59l3.1112j0j1&sourceid=chrome&ie=UTF-8</url>
+		<parent_id>0</parent_id>
+		<keyword />
+	</page>
+</crawler_log>
