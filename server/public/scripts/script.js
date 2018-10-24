@@ -1,5 +1,5 @@
 
-var crawlerApp = angular.module('crawlerApp', ['ngRoute']);
+var crawlerApp = angular.module('crawlerApp', ['ngRoute', 'ngCookies']);
 
 crawlerApp.config(function($routeProvider) {
 	$routeProvider
@@ -18,7 +18,7 @@ crawlerApp.config(function($routeProvider) {
 
 	// route for the history page
 	.when('/history', {
-		templateUrl : 'pages/history.html',
+		templateUrl : './../html/history.html',
 		controller  : 'historyController'
 	});
 });
@@ -53,8 +53,27 @@ crawlerApp.factory('graphData', function() {
 });
 
 // create the controller and inject Angular's $scope
-crawlerApp.controller('homeController', function($scope, graphData) {
+crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
 	//TODO: Send request to server to retrieve graph from search terms
+	//$scope.submit = function(){
+	//var url = ;
+	// var data = {
+	// 	start: ,
+	// 	search: ,
+	// 	limit: ,
+	// 	keyword: ,
+	// };
+	// $http.post(url, data).then(function(response){
+	// 	if(success){
+	// 		parse data and save to graphData
+	// 		save cookie
+	// 		$location.path('/graph');
+	// 	}
+	// 	else{
+	// 		show error
+	// 	}
+	// });
+	//}
 
 	//TODO: After receiving request, parse data and update graph service
 	var text = `<data>
@@ -97,6 +116,10 @@ crawlerApp.controller('homeController', function($scope, graphData) {
 	}
 
 	console.log(graphData.getGraph());
+
+	$scope.history = function(){
+		$location.path('history');
+	};
 
 });
 
@@ -161,7 +184,9 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 		if(nodeID) {
 			setTimeout(function(){
 				document.getElementById("popup").style.display = "block";
-				//document.getElementById("pTitle").innerHTML = 
+				//document.getElementById("pTitle").innerHTML = nodeID['title'];
+				//document.getElementById("pInfo").innerHTML = nodeID['info'];
+				//document.getElementById("pLink").href = nodeID['link'];
 
 				network.focus(nodeID, {
 					scale: 1.0,
@@ -184,8 +209,90 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 	});
 });
 
-crawlerApp.controller('historyController', function($scope) {
+crawlerApp.controller('historyController', function($scope, $cookieStore, $location) {
 	//TODO: Update scope with history cookie
+	$scope.hist = [{
+		id: 1,
+		start: "www.google.com",
+		search: "dfs",
+		limit: 1,
+		keyword: ""
+	},
+	{
+		id: 2,
+		start: "www.google.com",
+		search: "bfs",
+		limit: 2,
+		keyword: "asdf"
+	},
+	{
+		id: 3,
+		start: "www.google.com",
+		search: "dfs",
+		limit: 3,
+		keyword: "a"
+	},
+	{
+		id: 4,
+		start: "www.google.com",
+		search: "bfs",
+		limit: 4,
+		keyword: "b"
+	},
+	{
+		id: 5,
+		start: "www.google.com",
+		search: "dfs",
+		limit: 5,
+		keyword: "c"
+	},
+	{
+		id: 1,
+		start: "www.google.com",
+		search: "dfs",
+		limit: 1,
+		keyword: ""
+	},
+	{
+		id: 2,
+		start: "www.google.com",
+		search: "bfs",
+		limit: 2,
+		keyword: "asdf"
+	},
+	{
+		id: 3,
+		start: "www.google.com",
+		search: "dfs",
+		limit: 3,
+		keyword: "a"
+	},
+	{
+		id: 4,
+		start: "www.google.com",
+		search: "bfs",
+		limit: 4,
+		keyword: "b"
+	},
+	{
+		id: 5,
+		start: "www.google.com",
+		search: "dfs",
+		limit: 5,
+		keyword: "c"
+	},
+	];
+
+	$scope.view = function(id){
+		console.log(id);
+		//Send request to server
+		//update graph
+		//$location.path('/graph');
+	};
+
+	$scope.search = function() {
+		$location.path('/');
+	};
 });
 
 
