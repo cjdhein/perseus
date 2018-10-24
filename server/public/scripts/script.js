@@ -32,7 +32,8 @@ crawlerApp.factory('graphData', function() {
 	return {
     	addNode: addNode,
     	addEdge: addEdge,
-    	getGraph: get
+    	getGraph: get,
+    	reset: reset
 	};
 
 	function addNode(node) {
@@ -50,72 +51,65 @@ crawlerApp.factory('graphData', function() {
 	function get() {
 		return graph;
 	}
+
+	function reset() {
+		graph.nodes = [];
+		graph.edges = [];
+	};
 });
 
 // create the controller and inject Angular's $scope
 crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
+	$scope.data = {};
+
 	//TODO: Send request to server to retrieve graph from search terms
-	//$scope.submit = function(){
-	//var url = ;
-	// var data = {
-	// 	start: ,
-	// 	search: ,
-	// 	limit: ,
-	// 	keyword: ,
-	// };
-	// $http.post(url, data).then(function(response){
-	// 	if(success){
-	// 		parse data and save to graphData
-	// 		save cookie
-	// 		$location.path('/graph');
-	// 	}
-	// 	else{
-	// 		show error
-	// 	}
-	// });
-	//}
-
-	//TODO: After receiving request, parse data and update graph service
-	var text = `<data>
-	<page>
-	<id>0</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-</page>
-<page>
-	<id>1</id>
-	<title>Google</title>
-	<url>https://www.google.com/</url>
-	<parent_id>0</parent_id>
-	<keyword />
-</page>
-</data>`;
-
-	var parser = new DOMParser();
-	var xml = parser.parseFromString(text, 'application/xml');
-	var pages = xml.getElementsByTagName('page');
-
-	for(var i = 0; i < pages.length; ++i) {
-		var nodes = pages[i].children;
-		var newNode = {
-			keyword: false
-		};
-		for(var j = 0; j < nodes.length; ++j) {
-			if(nodes[j].nodeName == 'parent_id') {
-				graphData.addEdge(i, nodes[j].innerHTML);
-			}
-			else if(nodes[j].nodeName == 'keyword') {
-				newNode['keyword'] = true;
-			}
-			else {
-				newNode[nodes[j].nodeName] = nodes[j].innerHTML;
-			}
+	$scope.submit = function(){
+		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit) {
+			return;
 		}
 
-		graphData.addNode(newNode);
-	}
+		var url = "/post";
 
-	console.log(graphData.getGraph());
+		console.log($scope.data);
+		$http.post(url, $scope.data)
+			.success(function(response, status){
+				graphData.reset();
+				saveData(response);
+				console.log(graphData.getGraph());
+				//save cookie
+				$location.path('/graph');
+			}).
+			error(function(data, status){
+				//error message
+				console.log("error");
+			});
+	};
+
+	var saveData = function(text) {
+		var parser = new DOMParser();
+		var xml = parser.parseFromString(text, 'application/xml');
+		var pages = xml.getElementsByTagName('page');
+
+		for(var i = 0; i < pages.length; ++i) {
+			var nodes = pages[i].children;
+			var newNode = {
+				keyword: false
+			};
+			for(var j = 0; j < nodes.length; ++j) {
+				if(nodes[j].nodeName == 'parent_id') {
+					graphData.addEdge(i, nodes[j].innerHTML);
+				}
+				else if(nodes[j].nodeName == 'keyword') {
+					newNode['keyword'] = true;
+				}
+				else {
+					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
+				}
+			}
+
+			graphData.addNode(newNode);
+		}
+	};
 
 	$scope.history = function(){
 		$location.path('history');
@@ -125,25 +119,9 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 
 crawlerApp.controller('graphController', function($scope, graphData) {
 	//TODO: Create node and edges from graph service
-	//var graph = graphData.getGraph();
-	//var nodes = new vis.DataSet(graph.nodes);
-	//var edges = new vis.DataSet(graph.edges);
-
-	var nodes = new vis.DataSet([
-    	{id: 1, label: 'Node 1', url: 'www.google.com'},
-    	{id: 2, label: 'Node 2'},
-    	{id: 3, label: 'Node 3'},
-    	{id: 4, label: 'Node 4'},
-    	{id: 5, label: 'Node 5'}
-	]);
-
-	// create an array with edges
-	var edges = new vis.DataSet([
-    	{from: 1, to: 3},
-    	{from: 1, to: 2},
-    	{from: 2, to: 4},
-    	{from: 2, to: 5}
-	]);
+	var graph = graphData.getGraph();
+	var nodes = new vis.DataSet(graph.nodes);
+	var edges = new vis.DataSet(graph.edges);
 
 	// create a network
 	var container = document.getElementById('mynetwork');
@@ -179,20 +157,23 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 
 	//Handle node on-click
 	network.on('click', function(properties) {
+		document.getElementById("popup").style.display = "none";
+
 		var nodeID = properties.nodes[0];
+		console.log("nodeID: " + nodeID);
 
 		if(nodeID) {
+			network.focus(nodeID, {
+				scale: 1.0,
+				animation: true
+			}, 1000);
+
 			setTimeout(function(){
 				document.getElementById("popup").style.display = "block";
-				//document.getElementById("pTitle").innerHTML = nodeID['title'];
-				//document.getElementById("pInfo").innerHTML = nodeID['info'];
-				//document.getElementById("pLink").href = nodeID['link'];
-
-				network.focus(nodeID, {
-					scale: 1.0,
-					animation: true
-				}, 1000);
-			});
+				document.getElementById("pTitle").innerHTML = graph.nodes[nodeID]['title'];
+				document.getElementById("pInfo").innerHTML = graph.nodes[nodeID]['info'];
+				document.getElementById("pLink").href = graph.nodes[nodeID]['url'];
+			}, 1000);
 		}
 		else {
 			document.getElementById('popup').style.display = "none";

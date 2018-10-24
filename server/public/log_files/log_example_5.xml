@@ -177,13 +177,6 @@
 	</page>
 
 	<page>
-		<id>24</id>
-		<title>Google</title>
-		<url>https://www.google.com/</url>
-		<parent_id>0</parent_id>
-	</page>
-
-	<page>
 		<id>25</id>
 		<title>Google</title>
 		<url>https://www.google.com/</url>

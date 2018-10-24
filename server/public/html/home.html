@@ -6,7 +6,7 @@
 	<div class="col-md-3"></div>
 	<div class="form-group col-md-6">
     	<label for="start">Starting webpage:</label>
-    	<input type="text" class="form-control" name="start">
+    	<input type="text" class="form-control" ng-model="data.start" required>
   	</div>
 	</div>
 
@@ -14,7 +14,7 @@
 	<div class="col-md-3"></div>
   	<div class="form-group col-md-6">
     	<label for="search">Search method:</label>
-    	<select class="form-control" name="search">
+    	<select class="form-control" ng-model="data.search" required>
       		<option value="dfs">Depth-First Search</option>
       		<option value="bfs">Breadth-First Search</option>
     	</select>
@@ -25,7 +25,7 @@
 	<div class="col-md-3"></div>
   	<div class="form-group col-md-6">
     	<label for="limit">Numeric limit:</label>
-    	<input type="number" class="form-control" name="limit">
+    	<input type="number" class="form-control" ng-model="data.limit" required min="1">
   	</div>
   	</div>
 
@@ -33,7 +33,7 @@
 	<div class="col-md-3"></div>
   	<div class="form-group col-md-6">
     	<label for="keyword">Keyword:</label>
-    	<input type="text" class="form-control" name="keyword">
+    	<input type="text" class="form-control" ng-model="data.keyword">
   	</div>
   	</div>
 
@@ -44,5 +44,5 @@
 	</form>
 
 	<div class="footer centered">
-	<a href="" ng-click="history()"><h5>View Previous Searches</h5></a>
+	<a href="" ng-submit="history()"><h5>View Previous Searches</h5></a>
 	</div>

@@ -26,7 +26,7 @@ app.post("/post", function(req, res) {
 
 
 
-	var filename = "log_example_1.xml";
+	var filename = "log_example_5.xml";
 
 	try {
 		if (fs.existsSync(__dirname + path + filename)) {
