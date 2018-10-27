@@ -62,6 +62,16 @@ crawlerApp.factory('graphData', function() {
 crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
 	$scope.data = {};
 
+	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
+	var cookie = $cookieStore.get('graphCrawlerHistory');
+	if(!cookieData) {
+		$cookieStore.put('graphCrawlerHistoryData', {
+			start: 0,
+			size: 0
+		});
+		$cookieStore.put('graphCrawlerHistory', {});
+	}
+
 	//TODO: Send request to server to retrieve graph from search terms
 	$scope.submit = function(){
 		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit) {
@@ -75,8 +85,11 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 			.success(function(response, status){
 				graphData.reset();
 				saveData(response);
-				console.log(graphData.getGraph());
-				//save cookie
+				addCookie($scope.data);
+
+				console.log($cookieStore.get('graphCrawlerHistoryData'));
+				console.log($cookieStore.get('graphCrawlerHistory'));
+
 				$location.path('/graph');
 			}).
 			error(function(data, status){
@@ -111,8 +124,24 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 		}
 	};
 
+	var addCookie = function(data) {
+		var cookieData = $cookieStore.get('graphCrawlerHistoryData');
+		var cookie = $cookieStore.get('graphCrawlerHistory');
+		if(cookieData['size'] == 10) {
+			cookie[cookieData['start']] = data;
+			cookieData['start'] = (cookieData['start'] + 1) % 10;
+		}
+		else {
+			cookie[(cookieData['start']+cookieData['size']) % 10] = data;
+			cookieData['size'] += 1;
+		}
+
+		$cookieStore.put('graphCrawlerHistoryData', cookieData);
+		$cookieStore.put('graphCrawlerHistory', cookie);
+	};
+
 	$scope.history = function(){
-		$location.path('history');
+		$location.path('/history');
 	};
 
 });
@@ -192,77 +221,89 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 
 crawlerApp.controller('historyController', function($scope, $cookieStore, $location) {
 	//TODO: Update scope with history cookie
-	$scope.hist = [{
-		id: 1,
-		start: "www.google.com",
-		search: "dfs",
-		limit: 1,
-		keyword: ""
-	},
-	{
-		id: 2,
-		start: "www.google.com",
-		search: "bfs",
-		limit: 2,
-		keyword: "asdf"
-	},
-	{
-		id: 3,
-		start: "www.google.com",
-		search: "dfs",
-		limit: 3,
-		keyword: "a"
-	},
-	{
-		id: 4,
-		start: "www.google.com",
-		search: "bfs",
-		limit: 4,
-		keyword: "b"
-	},
-	{
-		id: 5,
-		start: "www.google.com",
-		search: "dfs",
-		limit: 5,
-		keyword: "c"
-	},
-	{
-		id: 1,
-		start: "www.google.com",
-		search: "dfs",
-		limit: 1,
-		keyword: ""
-	},
-	{
-		id: 2,
-		start: "www.google.com",
-		search: "bfs",
-		limit: 2,
-		keyword: "asdf"
-	},
-	{
-		id: 3,
-		start: "www.google.com",
-		search: "dfs",
-		limit: 3,
-		keyword: "a"
-	},
-	{
-		id: 4,
-		start: "www.google.com",
-		search: "bfs",
-		limit: 4,
-		keyword: "b"
-	},
-	{
-		id: 5,
-		start: "www.google.com",
-		search: "dfs",
-		limit: 5,
-		keyword: "c"
-	},
-	];
+	// $scope.hist = [{
+	// 	id: 1,
+	// 	start: "www.google.com",
+	// 	search: "dfs",
+	// 	limit: 1,
+	// 	keyword: ""
+	// },
+	// {
+	// 	id: 2,
+	// 	start: "www.google.com",
+	// 	search: "bfs",
+	// 	limit: 2,
+	// 	keyword: "asdf"
+	// },
+	// {
+	// 	id: 3,
+	// 	start: "www.google.com",
+	// 	search: "dfs",
+	// 	limit: 3,
+	// 	keyword: "a"
+	// },
+	// {
+	// 	id: 4,
+	// 	start: "www.google.com",
+	// 	search: "bfs",
+	// 	limit: 4,
+	// 	keyword: "b"
+	// },
+	// {
+	// 	id: 5,
+	// 	start: "www.google.com",
+	// 	search: "dfs",
+	// 	limit: 5,
+	// 	keyword: "c"
+	// },
+	// {
+	// 	id: 1,
+	// 	start: "www.google.com",
+	// 	search: "dfs",
+	// 	limit: 1,
+	// 	keyword: ""
+	// },
+	// {
+	// 	id: 2,
+	// 	start: "www.google.com",
+	// 	search: "bfs",
+	// 	limit: 2,
+	// 	keyword: "asdf"
+	// },
+	// {
+	// 	id: 3,
+	// 	start: "www.google.com",
+	// 	search: "dfs",
+	// 	limit: 3,
+	// 	keyword: "a"
+	// },
+	// {
+	// 	id: 4,
+	// 	start: "www.google.com",
+	// 	search: "bfs",
+	// 	limit: 4,
+	// 	keyword: "b"
+	// },
+	// {
+	// 	id: 5,
+	// 	start: "www.google.com",
+	// 	search: "dfs",
+	// 	limit: 5,
+	// 	keyword: "c"
+	// },
+	// ];
+
+	var historyArr = [];
+	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
+	var start = cookieData['start'];
+	var size = cookieData['size'];
+	var cookie = $cookieStore.get('graphCrawlerHistory');
+
+	for(var i = 0; i < size; ++i) {
+		historyArr.push(cookie[(start+i)%10]);
+	}
+
+	$scope.hist = historyArr.reverse();
 
 	$scope.view = function(id){
 		console.log(id);
