@@ -3,6 +3,7 @@ from urlparse import urlparse
 import urllib2
 import sys
 from webparser import WebParser
+from pagenode import pageNode
 
 
 class WebCrawler:
@@ -31,11 +32,11 @@ class WebCrawler:
     #   2: hit depth (won't trigger in webcrawler)
     #   3: found keyword
     #   4: Error opening URL
-    def crawl(self, urlString):
-        theSoup = self._fetch(urlString)
+    def crawl(self, page):
+        theSoup = self._fetch(page.nodeUrl)
         if type(theSoup) == str:
             return theSoup
-        if self._parseForUrls(theSoup,urlString):
+        if self._parseForUrls(theSoup,page.nodeUrl):
             print "no links?"
         if self._parseForKeyword(theSoup):
             return 3
