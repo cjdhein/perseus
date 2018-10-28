@@ -16,7 +16,8 @@ class WebParser:
             return False
 
 
-
+    def getPageTitle(self,soup):
+        return soup.find('title').string
 
     # parseUrls
     # Desc:     parses provided BeautifulSoup object for all links and constructs full urls out of them
@@ -38,6 +39,11 @@ class WebParser:
         # Obtain full url for each link
         for aTag in aTags:
             urlToAdd = ''
+
+            # confirm the link actually leads somewhere, if it doesn't skip it
+            if len(aTag['href']) <= 0:
+                continue
+                print "\n\n\nBLANK LINK\n\n\n"
 
             # if base url is not in the href attribute, we need to build out the full url, provided it does not link to another domain / netloc
             if baseUrl not in aTag['href']:

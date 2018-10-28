@@ -3,17 +3,21 @@ from urlparse import urlparse
 import urllib2
 import sys
 from webparser import WebParser
-from pagenode import pageNode
+from pagenode import PageNode
 
 
 class WebCrawler:
     # Performs crawling of provided web address
-    
 
-    def __init__ (self, keyword):
-        self.keyword = keyword
+    def __init__ (self,keyword=None):
         self.parser = WebParser()
         self.urlDict = {}
+
+        if keyword is None:
+            self.keywordExists = False
+        else:
+            self.keywordExists = True
+            self.keyword = keyword
     
     def __str__(self):
         # return string representation of self
@@ -36,11 +40,27 @@ class WebCrawler:
         theSoup = self._fetch(page.nodeUrl)
         if type(theSoup) == str:
             return theSoup
-        if self._parseForUrls(theSoup,page.nodeUrl):
-            print "no links?"
-        if self._parseForKeyword(theSoup):
-            return 3
-        else:
+        page.setTitle(self.parser.getPageTitle(theSoup))
+
+        # Parse the URLs from gathered soup
+        self.urlDict = self.parser.parseUrls(theSoup, page.nodeUrl)
+        
+        # Check if any urls were parsed
+        if len(self.urlDict.keys()) > 0:
+            # If they were, pass parsed urls to the pageNode's urlList
+            page.urlList = self.urlDict.keys()
+        
+        # If a keyword exists, look for the keyword in text. Returns True if found
+        if self.keywordExists:
+            status = self.parser.parseKeyword(theSoup, self.keyword)
+
+            # If keyword is found, return code 3 (keyword found)
+            if status == True:  
+                return 3
+            # Otherwise return code 1 (normal return)
+            else:
+                return 1
+        else:  
             return 1
         
 
@@ -53,24 +73,23 @@ class WebCrawler:
             html = html.read()
         except:
             e = sys.exc_info()[1]
-            print("Error " + str(e.code) + ": " + str(e.reason))
-            return("Error " + str(e.code) + ": " + str(e.reason))
+            print e
+            #print("Error " + str(e.code) + ": " + str(e.reason))
+            #return("Error " + str(e.code) + ": " + str(e.reason))
+            return e
         return bs(html,'lxml')
 
         
-
-
-    def _parseForUrls(self, soup,urlString):
+    def _parseForUrls(self, soup, urlString):
         temp = self.parser.parseUrls(soup,urlString)
         self.urlDict = temp
         if len(self.urlDict.keys()) <= 0:
-            return True 
+            return False 
         else:
-            return False
+            return True
         
 
-    def _parseForKeyword(self, soup):
-        return self.parser.parseKeyword(soup,self.keyword)
+
     
 
 

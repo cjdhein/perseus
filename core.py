@@ -1,8 +1,11 @@
 # Used to test class implementations
 
-from webcrawler import WebCrawler
+from pagetree import PageTree
 
+startUrl = "https://www.taylorstitch.com/"
+limit = 8
+search = 1
+keyword = None
+testTree = PageTree(startUrl, limit, keyword, 1)
 
-spidey = WebCrawler("brandy")
-print spidey.crawl("https://www.nytimes.com/")
-print spidey
+testTree.beginCrawl()
