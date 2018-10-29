@@ -1,0 +1,24 @@
+<h1 class="display-1 centered">Past Searches</h1>
+
+<table class="table table-striped">
+	<thead>
+		<th scope="col">Starting Page</th>
+		<th scope="col">Search</th>
+		<th scope="col">Limit</th>
+		<th scope="col">Keyword</th>
+		<th scope="col"></th>
+	</thead>
+	<tbody>
+		<tr ng-repeat="h in hist">
+			<th scope="row">{{h.start}}</th>
+			<td>{{h.search}}</td>
+			<td>{{h.limit}}</td>
+			<td>{{h.keyword}}</td>
+			<td><a href="" id={{h.id}} ng-click="view(h.id)">View</a></td>
+		</tr>
+	</tbody>
+</table>
+
+<div class="footer centered">
+	<a href="" ng-click="search()"><h5>Start a New Search</h5></a>
+</div>
