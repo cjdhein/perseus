@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 
 var path = "/public/log_files/"; //Path where log files are stored
 
-app.set("port", 3000);
+app.set("port", 3540);
 app.use(express.static("public"));
 
 // Homepage
