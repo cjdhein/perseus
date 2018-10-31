@@ -60,7 +60,9 @@ crawlerApp.factory('graphData', function() {
 
 // create the controller and inject Angular's $scope
 crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
-	$scope.data = {};
+	$scope.data = {
+		search: "dfs"
+	};
 
 	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
 	var cookie = $cookieStore.get('graphCrawlerHistory');
@@ -74,21 +76,18 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 
 	//TODO: Send request to server to retrieve graph from search terms
 	$scope.submit = function(){
-		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit) {
+		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit || !Number.isInteger($scope.data.limit)) {
 			return;
 		}
 
 		var url = "/post";
 
-		console.log($scope.data);
 		$http.post(url, $scope.data)
 			.success(function(response, status){
 				graphData.reset();
 				saveData(response);
+				console.log(graphData.getGraph());
 				addCookie($scope.data);
-
-				console.log($cookieStore.get('graphCrawlerHistoryData'));
-				console.log($cookieStore.get('graphCrawlerHistory'));
 
 				$location.path('/graph');
 			}).
@@ -103,14 +102,25 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 		var xml = parser.parseFromString(text, 'application/xml');
 		var pages = xml.getElementsByTagName('page');
 
+		var idToLevel = {
+			0: 1
+		};
+
 		for(var i = 0; i < pages.length; ++i) {
 			var nodes = pages[i].children;
 			var newNode = {
 				keyword: false
 			};
+
+			if(i == 0) {
+				newNode["level"] = 1;
+			}
+
 			for(var j = 0; j < nodes.length; ++j) {
 				if(nodes[j].nodeName == 'parent_id') {
 					graphData.addEdge(i, nodes[j].innerHTML);
+					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 2;
+					newNode["level"] = idToLevel[i]; 
 				}
 				else if(nodes[j].nodeName == 'keyword') {
 					newNode['keyword'] = true;
@@ -170,6 +180,7 @@ crawlerApp.controller('graphController', function($scope, graphData) {
         	hierarchical: {
             	enabled: true,
             	direction: "LR",
+            	//sortMethod: "directed"
         	}
     	},
     	interaction: {
@@ -220,79 +231,6 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 });
 
 crawlerApp.controller('historyController', function($scope, $cookieStore, $location) {
-	//TODO: Update scope with history cookie
-	// $scope.hist = [{
-	// 	id: 1,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 1,
-	// 	keyword: ""
-	// },
-	// {
-	// 	id: 2,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 2,
-	// 	keyword: "asdf"
-	// },
-	// {
-	// 	id: 3,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 3,
-	// 	keyword: "a"
-	// },
-	// {
-	// 	id: 4,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 4,
-	// 	keyword: "b"
-	// },
-	// {
-	// 	id: 5,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 5,
-	// 	keyword: "c"
-	// },
-	// {
-	// 	id: 1,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 1,
-	// 	keyword: ""
-	// },
-	// {
-	// 	id: 2,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 2,
-	// 	keyword: "asdf"
-	// },
-	// {
-	// 	id: 3,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 3,
-	// 	keyword: "a"
-	// },
-	// {
-	// 	id: 4,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 4,
-	// 	keyword: "b"
-	// },
-	// {
-	// 	id: 5,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 5,
-	// 	keyword: "c"
-	// },
-	// ];
-
 	var historyArr = [];
 	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
 	var start = cookieData['start'];
