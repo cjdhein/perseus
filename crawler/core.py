@@ -1,20 +1,24 @@
 # Used to test class implementations
 
 from pagetree import PageTree
+from pagenode import PageNode
+import pdb
+
 
 # Set a starting URL
-startUrl = "https://www.taylorstitch.com/"
+startUrl = "http://www.nytimes.com"
 
 # Number of links to follow
-limit = 8
-# Searchtype: 1 = DFS, 2 = BFS !!!! BFS NOT IMPLEMENTED !!!!
+limit = 3
+# Searchtype: 1 = DFS, 2 = BFS 
 search = 1
 
 # Keyword search not implemented into pagetree / pagenode yet
-keyword = None
+keyword = "Texas"
 
 # Create new PageTree with above variables
-testTree = PageTree(startUrl, limit, keyword, 1)
+testTree = PageTree(startUrl, limit, keyword, search)
 
 # Begin the crawl
 testTree.beginCrawl()
+testTree.printTree()

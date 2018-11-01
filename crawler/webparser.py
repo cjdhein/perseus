@@ -1,4 +1,6 @@
 from urlparse import urlparse
+import re
+
 
 class WebParser:
 
@@ -19,6 +21,15 @@ class WebParser:
     def getPageTitle(self,soup):
         return soup.find('title').string
 
+    def linkFindHelper(self,tag):
+        valid = (tag.name == u'a' and tag.has_attr('href'))
+        if valid:
+            href = tag['href']
+            pattern = "(\.(?=(htm|asp|shtm|php|do))\w{2,5}$|\/\w*?$)"
+            status = re.search(pattern,href)
+
+        return True if valid and status else False
+
     # parseUrls
     # Desc:     parses provided BeautifulSoup object for all links and constructs full urls out of them
     # Args:     soup - a beautiful soup 4 object with html; url - the url the soup belongs to
@@ -29,11 +40,17 @@ class WebParser:
         uniqueLinks = {}
 
         # all 'a' elements with href
-        aTags = soup.find_all('a', href=True)
+        aTags = soup.find_all(self.linkFindHelper)
+
         # url info separated
         urlInfo = urlparse(url)
 
         # base of our url
+        if len(urlInfo.scheme) <= 0:
+            print "da hek?"
+            print urlInfo
+            print url
+
         baseUrl = urlInfo.scheme + '://' + urlInfo.netloc
         baseWithPath = baseUrl + urlInfo.path
         # Obtain full url for each link
@@ -52,7 +69,7 @@ class WebParser:
                 hrefNetloc = urlparse(aTag['href']).netloc
                 if len(hrefNetloc) > 0:
                     temp = urlparse(aTag['href'])
-                    urlToAdd = temp.scheme + "://" + urlInfo.netloc + urlInfo.path # another domain is included, so add as is
+                    urlToAdd = temp.scheme + "://" + temp.netloc + temp.path # another domain is included, so add as is
                 else:
                     if aTag['href'][0] == '/':
                         urlToAdd = baseUrl + aTag['href']
