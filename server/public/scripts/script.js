@@ -6,8 +6,8 @@ crawlerApp.config(function($routeProvider) {
 
 	// route for the home page
 	.when('/', {
-		templateUrl : './../html/home.html',
-		controller  : 'homeController'
+		templateUrl : './../html/history.html',
+		controller  : 'historyController'
 	})
 
 	// route for the graph page
@@ -17,10 +17,10 @@ crawlerApp.config(function($routeProvider) {
 	})
 
 	// route for the history page
-	.when('/history', {
-		templateUrl : './../html/history.html',
-		controller  : 'historyController'
-	});
+	// .when('/history', {
+	// 	templateUrl : './../html/history.html',
+	// 	controller  : 'historyController'
+	// });
 });
 
 crawlerApp.factory('graphData', function() {
@@ -58,8 +58,7 @@ crawlerApp.factory('graphData', function() {
 	};
 });
 
-// create the controller and inject Angular's $scope
-crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
+crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $location, graphData){
 	$scope.data = {
 		search: "dfs"
 	};
@@ -88,6 +87,10 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 				saveData(response);
 				console.log(graphData.getGraph());
 				addCookie($scope.data);
+
+				$scope.data = {
+					search: "dfs"
+				};
 
 				$location.path('/graph');
 			}).
@@ -151,7 +154,33 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 	};
 
 	$scope.history = function(){
-		$location.path('/history');
+		$location.path('/');
+	};
+});
+
+// create the controller and inject Angular's $scope
+crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
+	var historyArr = [];
+	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
+	var start = cookieData['start'];
+	var size = cookieData['size'];
+	var cookie = $cookieStore.get('graphCrawlerHistory');
+
+	for(var i = 0; i < size; ++i) {
+		historyArr.push(cookie[(start+i)%10]);
+	}
+
+	$scope.hist = historyArr.reverse();
+
+	$scope.view = function(id){
+		console.log(id);
+		//Send request to server
+		//update graph
+		//$location.path('/graph');
+	};
+
+	$scope.history = function(){
+		$location.path('/');
 	};
 
 });
