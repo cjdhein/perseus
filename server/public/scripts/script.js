@@ -1,3 +1,5 @@
+const keywordColor = "#ff7070";
+const defaultColor = "#D2E5FF";
 
 var crawlerApp = angular.module('crawlerApp', ['ngRoute', 'ngCookies']);
 
@@ -58,7 +60,7 @@ crawlerApp.factory('graphData', function() {
 	};
 });
 
-crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $location, graphData){
+crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $location, graphData, $route){
 	$scope.data = {
 		search: "dfs"
 	};
@@ -85,7 +87,6 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 			.success(function(response, status){
 				graphData.reset();
 				saveData(response);
-				console.log(graphData.getGraph());
 				addCookie($scope.data);
 
 				$scope.data = {
@@ -93,6 +94,7 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 				};
 
 				$location.path('/graph');
+				$route.reload();
 			}).
 			error(function(data, status){
 				//error message
@@ -122,11 +124,27 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 			for(var j = 0; j < nodes.length; ++j) {
 				if(nodes[j].nodeName == 'parent_id') {
 					graphData.addEdge(i, nodes[j].innerHTML);
-					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 2;
+					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 3;
 					newNode["level"] = idToLevel[i]; 
 				}
 				else if(nodes[j].nodeName == 'keyword') {
 					newNode['keyword'] = true;
+					newNode['color'] = {
+						background: keywordColor,
+						border: "#c60d0d",
+						highlight: {
+							background: keywordColor,
+							border: "#c60d0d"
+						},
+						hover: {
+							border: "#c60d0d",
+							background: "#ffaaaa"
+						}
+					};
+				}
+				else if(nodes[j].nodeName == 'title') {
+					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
+					newNode['label'] = nodes[j].innerHTML;
 				}
 				else {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
@@ -204,6 +222,7 @@ crawlerApp.controller('graphController', function($scope, graphData) {
     	edges: {
         	labelHighlightBold: false,
         	selectionWidth: 0,
+        	chosen: false,
     	},
     	layout: {
         	hierarchical: {
@@ -214,6 +233,8 @@ crawlerApp.controller('graphController', function($scope, graphData) {
     	},
     	interaction: {
         	dragNodes: false,
+        	hover: true,
+        	hoverConnectedEdges: false,
        		navigationButtons: true,
     	},
     	physics: {
@@ -226,7 +247,8 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 
 	//Handle node on-click
 	network.on('click', function(properties) {
-		document.getElementById("popup").style.display = "none";
+		document.getElementById("popupDefault").style.display = "none";
+		document.getElementById("popupKeyword").style.display = "none";
 
 		var nodeID = properties.nodes[0];
 		console.log("nodeID: " + nodeID);
@@ -238,24 +260,37 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 			}, 1000);
 
 			setTimeout(function(){
-				document.getElementById("popup").style.display = "block";
-				document.getElementById("pTitle").innerHTML = graph.nodes[nodeID]['title'];
-				document.getElementById("pInfo").innerHTML = graph.nodes[nodeID]['info'];
-				document.getElementById("pLink").href = graph.nodes[nodeID]['url'];
+				if(graph.nodes[nodeID]['keyword']) {
+					document.getElementById("popupDefault").style.display = "none";
+					document.getElementById("kTitle").innerHTML = graph.nodes[nodeID]['title'];
+					document.getElementById("kKeyword").innerHTML = "Contains keyword";
+					document.getElementById("kLink").href = graph.nodes[nodeID]['url'];
+					document.getElementById("popupKeyword").style.display = "block";
+				}
+				else {
+					document.getElementById("popupKeyword").style.display = "none";
+					document.getElementById("dTitle").innerHTML = graph.nodes[nodeID]['title'];
+					document.getElementById("dKeyword").innerHTML = "Doesn't contain keyword";
+					document.getElementById("dLink").href = graph.nodes[nodeID]['url'];
+					document.getElementById("popupDefault").style.display = "block";
+				}
 			}, 1000);
 		}
 		else {
-			document.getElementById('popup').style.display = "none";
+			document.getElementById('popupKeyword').style.display = "none";
+			document.getElementById('popupDefault').style.display = "none";
 		}
 
 	});
 
 	network.on('zoom', function(properties){
-		document.getElementById('popup').style.display = "none";
+		document.getElementById('popupKeyword').style.display = "none";
+		document.getElementById('popupDefault').style.display = "none";
 	});
 
 	network.on('dragStart', function(properties){
-		document.getElementById('popup').style.display = "none";
+		document.getElementById('popupKeyword').style.display = "none";
+		document.getElementById('popupDefault').style.display = "none";
 	});
 });
 

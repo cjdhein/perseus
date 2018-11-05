@@ -65,9 +65,9 @@ body {
 	height: 100%;
 }
 
-#popup {
+#popupDefault {
 	position: absolute;
-	background: #00aabb;
+	background: #2B7CE9;
 	border-radius: .4em;
 	display: none;
 	height: 15%;
@@ -75,9 +75,11 @@ body {
 	z-index: 100;
 	left: 40%;
 	top: 30%;
+	color: white;
+
 }
 
-#popup:after {
+#popupDefault:after {
 	content: '';
 	position: absolute;
 	bottom: 0;
@@ -85,11 +87,56 @@ body {
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
-	border-top-color: #00aabb;
+	border-top-color: #2B7CE9;
 	border-bottom: 0;
 	margin-left: -20px;
 	margin-bottom: -20px;
 	z-index:100;
+	
+}
+
+#popupKeyword {
+	position: absolute;
+	background: #c60d0d;
+	border-radius: .4em;
+	display: none;
+	height: 15%;
+	width: 20%;
+	z-index: 100;
+	left: 40%;
+	top: 30%;
+	color: white;
+}
+
+#popupKeyword:after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-top-color: #c60d0d;
+	border-bottom: 0;
+	margin-left: -20px;
+	margin-bottom: -20px;
+	z-index:100;
+}
+
+.popupContent {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	padding-top: 5%;
+}
+
+.popupContent a {
+	color: white;
+}
+
+#kTitle, #dTitle {
+	margin: 0;
+	padding: 3% 0 3% 0;
 }
 
 
