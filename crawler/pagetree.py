@@ -9,7 +9,8 @@ DEBUG = True
 
 class PageTree:
 
-    def __init__ (self, startUrl, limit, keyword, searchType):
+    def __init__ (self,outfile, startUrl, limit, searchType, keyword):
+        self.outfile = outfile
         self.startPage = startUrl
         self.limit = limit
         
@@ -18,6 +19,7 @@ class PageTree:
         else:
             self.keywordExists = True
             self.keyword = keyword
+
         self.searchType = searchType
         self.curLevel = 1
         self.webCrawler = WebCrawler(keyword)
@@ -200,7 +202,9 @@ class PageTree:
         stack = []
         self.traverseXML(self.activeNode,stack,xmlRoot)
 
-        xmlDoc.write("output.xml")
+        xmlOut = open("../server/logfiles/" + self.outfile,"w")
+        xmlDoc.write(xmlOut,pretty_print=True)
+        xmlOut.close()
 
     def traverseXML(self, node, stack, root):
         if node.hasUnvisited():
