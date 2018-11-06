@@ -3,6 +3,9 @@ from pagenode import PageNode
 import random
 import pdb
 from collections import deque
+from lxml import etree
+
+DEBUG = True
 
 class PageTree:
 
@@ -16,7 +19,7 @@ class PageTree:
             self.keywordExists = True
             self.keyword = keyword
         self.searchType = searchType
-        self.curLevel = 0
+        self.curLevel = 1
         self.webCrawler = WebCrawler(keyword)
         self.idCount = -1
         self.rootNode = PageNode(None,self.getUID(),startUrl) 
@@ -25,14 +28,14 @@ class PageTree:
         random.seed()
 
     def beginCrawl(self):
-        print self.searchType
         if self.searchType == 1:
             self.crawlDFS()
         else:
             self.crawlBFS()
 
     def crawlDFS(self):
-        print "Search DFS"
+        if DEBUG:
+            print "Search DFS"
 
         wc = self.webCrawler
         self.activeNode = self.rootNode
@@ -104,7 +107,8 @@ class PageTree:
 
 
     def crawlBFS(self):
-        print "Search BFS"
+        if DEBUG:
+            print "Search BFS"
         wc = self.webCrawler
         
         # Used to efficiently implement BFS method
@@ -126,7 +130,6 @@ class PageTree:
             # If the node was not crawled, crawl it
             if aNode.getCrawledStatus() == False:
                 retStat = wc.crawl(aNode)
-                
                 # Return codes:
                 #   0: good return
                 #   1: found keyword
@@ -139,7 +142,8 @@ class PageTree:
                 # Error occured, go back to parent Node for next node 
                 elif retStat == 2:
                     fo.write("Error in page\n")
-                    print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
+                    if DEBUG:
+                        print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
                     self.activeNode = aNode.parentNode
                     fo.close()
                     continue
@@ -149,11 +153,16 @@ class PageTree:
                 newUrl = aNode.urlList.pop()
                 newId = self.getUID()
                 newNode = PageNode(aNode, newId, newUrl)
+
+                if self.curLevel == self.limit:
+                    wc.titleCrawl(newNode)
+
                 aNode.nodeDict[newNode] = 0
                 q.append(newNode)
                 fo.write(newNode.__str__())
                 fo.write("\n\n")
             
+
             self.curLevel += 1
             fo.close()
 
@@ -173,13 +182,63 @@ class PageTree:
             nextNode = node.getUnvisited()
             self.traverse(nextNode,stack)
             
-            nextNode = stack.pop()
-            self.traverse(nextNode,stack)
         else:
             if node.visited == False:
                 node.visitNode()
-                print ""
-                print node
+                if DEBUG:
+                    print ""
+                    print node
+            nextNode = stack.pop()
+            self.traverse(nextNode,stack)
+
+    
+    def printTreeXML(self):
+        xmlRoot = etree.Element("crawler_log")
+        xmlDoc = etree.ElementTree(xmlRoot)
+        
+        self.activeNode = self.rootNode
+        stack = []
+        self.traverseXML(self.activeNode,stack,xmlRoot)
+
+        xmlDoc.write("output.xml")
+
+    def traverseXML(self, node, stack, root):
+        if node.hasUnvisited():
+            stack.append(node)
+            nextNode = node.getUnvisited()
+
+            self.traverseXML(nextNode,stack,root)
+        else:
+            if node.visited == False:
+                node.visitNode()
+
+                page = etree.SubElement(root,"page")
+
+                uid = etree.SubElement(page,"id")
+                url = etree.SubElement(page,"url")
+                title = etree.SubElement(page,"title")
+                puid = etree.SubElement(page,"parent_id")
+
+                if node.getKeywordStatus():
+                    key = etree.SubElement(page,"keyword")
+                    key.text = str(True)
+
+                uid.text = str(node.getUid())
+                url.text = str(node.getUrl())
+                title.text = str(node.getTitle())
+                puid.text = str(node.getParentUid())
+
+                if DEBUG:
+                    print(etree.tostring(page,pretty_print=True))
+            
+            if len(stack) >= 1:
+                nextNode = stack.pop()
+                self.traverseXML(nextNode,stack,root)
+
+
+
+
+
 
 
 

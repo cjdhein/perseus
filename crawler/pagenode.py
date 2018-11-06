@@ -37,6 +37,21 @@ class PageNode:
         titleString = scrubbed
         self.nodeTitle = titleString
 
+    def getTitle(self):
+        return self.nodeTitle
+
+    def getUid(self):
+        return self.uid
+
+    def getParentUid(self):
+        if self.parentNode is not None:
+            return self.parentNode.uid
+        else:
+            return "root"
+
+    def getUrl(self):
+        return self.nodeUrl
+
     def printUrls(self):
         for elem in self.urlList.items():
             print elem
@@ -74,3 +89,5 @@ class PageNode:
     
     def setKeywordStatus(self,status):
         self.keywordFound = status
+
+    

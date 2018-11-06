@@ -45,12 +45,13 @@ class WebCrawler:
         theSoup = fetched[0]
         
         # if we got a string back, there was an error fetching
-        # reture code 2 (error)
+        # return code 2 (error)
         if type(theSoup) == str:
             page.setTitle(theSoup)
             page.setCrawledStatus(True)
             return 2
         
+        print self.parser.getPageTitle(theSoup)
         page.setTitle(self.parser.getPageTitle(theSoup))
 
         # Parse the URLs from gathered soup
@@ -75,6 +76,17 @@ class WebCrawler:
         else:  
             return 0
         
+    def titleCrawl(self,page):
+        fetched = self._fetch(page.nodeUrl)
+        loadedUrl = fetched[1]
+        theSoup = fetched[0]
+
+        if type(theSoup) == str:
+            page.setTitle(theSoup)
+            page.setCrawledStatus(True)
+            return 2
+
+        page.setTitle(self.parser.getPageTitle(theSoup))
 
     # fetch the web page and pull all href elements / build urls
     # returns tuple of (bs4 object, url loaded). url loaded is returned to ensure we use the possibly redirected url

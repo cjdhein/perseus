@@ -35,4 +35,5 @@ testTree = PageTree(startUrl, limit, keyword, search)
 
 # Begin the crawl
 testTree.beginCrawl()
-testTree.printTree()
+testTree.printTreeXML()
+
