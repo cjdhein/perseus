@@ -19,7 +19,11 @@ class PageNode:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) + "\nPARENT UID:\tROOT NODE"
         else:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) +  "\nPARENT UID:\t" + str(self.parentNode.uid)
-        return retString
+        #return retString
+        if self.parentNode == None:
+            return "UID:\t" + str(self.uid) + "\tPUID:\tROOT"
+        else:
+            return "UID:\t" + str(self.uid) + "\tPUID:\t" + str(self.parentNode.uid)
 
     def getCrawledStatus(self):
         return self.crawled

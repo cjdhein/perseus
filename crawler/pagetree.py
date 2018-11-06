@@ -32,120 +32,66 @@ class PageTree:
             self.crawlBFS()
 
     def crawlDFS(self):
+
         wc = self.webCrawler
-        keywordHit = False
-        if self.searchType == 1: #DFS
-            self.activeNode = self.rootNode
-            
-            while self.curLevel <= self.limit and not keywordHit:
-                fo = open("log.txt","a")        
-                aNode = self.activeNode
-                print "Node: " + str(aNode.uid) + "\t Level: " + str(self.curLevel) + " URL: " + aNode.nodeUrl
-                
-                if aNode.getCrawledStatus() == False:
-                    print "Node not crawled. Crawling"
-                    retStat = wc.crawl(aNode)
-                    # Return codes:
-                    #   0: good return
-                    #   1: found keyword
-                    #   2: Error opening URL
-                    if retStat == 1:
-                        fo.write("Keyword found\n")
-                        keywordHit = True
-                        aNode.setKeywordStatus(True)
-                        continue
-                        
-
-                    elif retStat == 2:
-                        fo.write("Error in page\n")
-                        print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
-                        self.activeNode = aNode.parentNode 
-                        fo.close()
-                        continue
-                else:
-                    print "Already crawled"
-                   
-                # get length of urlList
-                listLen = len(aNode.urlList)
-
-                # If this page has URLs available
-                if listLen >= 1:
-                    i = random.randrange(len(aNode.urlList))
-                    aNode.urlList[i], aNode.urlList[-1] = aNode.urlList[-1], aNode.urlList[i]
-                    newUrl = aNode.urlList.pop()
-                    newId = self.getUID()
-                    newNode = PageNode(aNode, newId, newUrl)
-                    aNode.nodeDict[newNode] = 0
-                    self.curLevel += 1
-                    self.activeNode = newNode
-                    fo.write(aNode.__str__())
-                    fo.write("\n\n")
-
-                # No URLs available
-                else:
-                    print "list length < 1"
-                    # Set aNode to the parent node in order to grab a new URL from there
-                    if aNode.parentNode is None:
-                        self.currentLevel = self.limit + 1
-                    self.activeNode = aNode.parentNode 
-
-                fo.close()
-
-
-    def crawlBFS(self):
-        wc = self.webCrawler
+        self.activeNode = self.rootNode
         
-        q = deque()
-        q.append(self.rootNode)
-        
-        while self.curLevel <= self.limit or len(q) == 0:
-            self.activeNode = q.popleft()
-            fo = open("log.txt","a")
+        # Loop while we have not hit the limit and the keyword status is false
+        while self.curLevel <= self.limit and not self.activeNode.getKeywordStatus():
+            fo = open("log.txt","a")        
             aNode = self.activeNode
             print "Node: " + str(aNode.uid) + "\t Level: " + str(self.curLevel) + " URL: " + aNode.nodeUrl
-
+            
+            # if the active node has not been crawled
             if aNode.getCrawledStatus() == False:
                 print "Node not crawled. Crawling"
+
+                # trigger the crawl and store return status in retStat
                 retStat = wc.crawl(aNode)
-                
+
                 # Return codes:
                 #   0: good return
                 #   1: found keyword
                 #   2: Error opening URL
                 if retStat == 1:
                     fo.write("Keyword found\n")
+                    # Set keyword status to true and continue to next loop interation to break out
+                    aNode.setKeywordStatus(True)
+                    continue
+                  
+
+                # Error occurred, so we back-up to parent node
                 elif retStat == 2:
                     fo.write("Error in page\n")
                     print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
-                    self.activeNode = aNode.parentNode
+                    self.activeNode = aNode.parentNode 
                     fo.close()
                     continue
             else:
-                print "Already crawled"
-            
-            while (len(aNode.urlList)) >= 1:
-                newUrl = aNode.urlList.pop()
-                newId = self.getUID()
-                newNode = PageNode(aNode, newId, newUrl)
-                aNode.nodeDict[newNode] = 0
-                q.append(newNode)
-                fo.write(newNode.__str__())
-                fo.write("\n\n")
-            
-            self.curLevel += 1
-
+              print "Already crawled"
+             
+            # Execution here means the node has been crawled
             
             # get length of urlList
             listLen = len(aNode.urlList)
 
             # If this page has URLs available
             if listLen >= 1:
+                # Get random index
                 i = random.randrange(len(aNode.urlList))
+
+                # Swap URL at chosen index with the end to speed up the procedure
                 aNode.urlList[i], aNode.urlList[-1] = aNode.urlList[-1], aNode.urlList[i]
+
+                # set newUrl, newId and construct the new node
                 newUrl = aNode.urlList.pop()
                 newId = self.getUID()
                 newNode = PageNode(aNode, newId, newUrl)
+
+                # Add new node to current node's connections, setting it to 0 to indicate it hasn't been visited
                 aNode.nodeDict[newNode] = 0
+
+                # Set a new active node, and go down a level
                 self.curLevel += 1
                 self.activeNode = newNode
                 fo.write(aNode.__str__())
@@ -157,8 +103,67 @@ class PageTree:
                 # Set aNode to the parent node in order to grab a new URL from there
                 if aNode.parentNode is None:
                     self.currentLevel = self.limit + 1
-                self.activeNode = aNode.parentNode
+                self.activeNode = aNode.parentNode 
 
+            fo.close()
+
+
+    def crawlBFS(self):
+        wc = self.webCrawler
+        
+        # Used to efficiently implement BFS method
+        q = deque()
+
+        # Start by adding the root node to the queue
+        q.append(self.rootNode)
+
+        # Set as activeNode to ensure first loop runs
+        self.activeNode = self.rootNode
+       
+        # Loop while the limit has not been hit, the queue is not empty, and we have not hit the keyword
+        while self.curLevel <= self.limit and len(q) >= 1 and not self.activeNode.getKeywordStatus():
+
+            # Take node from the front of the queue and make it the active node
+            self.activeNode = q.popleft()
+            fo = open("log.txt","a")
+            aNode = self.activeNode
+            print "Node: " + str(aNode.uid) + "\t Level: " + str(self.curLevel) + " URL: " + aNode.nodeUrl
+
+            # If the node was not crawled, crawl it
+            if aNode.getCrawledStatus() == False:
+                print "Node not crawled. Crawling"
+                retStat = wc.crawl(aNode)
+                
+                # Return codes:
+                #   0: good return
+                #   1: found keyword
+                #   2: Error opening URL
+                if retStat == 1:
+                    fo.write("Keyword found\n")
+                    # Set keyword status to true and continue to next loop interation to break out
+                    aNode.setKeywordStatus(True)
+                    continue
+                # Error occured, go back to parent Node for next node 
+                elif retStat == 2:
+                    fo.write("Error in page\n")
+                    print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
+                    self.activeNode = aNode.parentNode
+                    fo.close()
+                    continue
+            else:
+                print "Already crawled"
+            
+            # Loop while there are still URLs to visit
+            while (len(aNode.urlList)) >= 1:
+                newUrl = aNode.urlList.pop()
+                newId = self.getUID()
+                newNode = PageNode(aNode, newId, newUrl)
+                aNode.nodeDict[newNode] = 0
+                q.append(newNode)
+                fo.write(newNode.__str__())
+                fo.write("\n\n")
+            
+            self.curLevel += 1
             fo.close()
 
                 
@@ -182,7 +187,6 @@ class PageTree:
             self.traverse(nextNode,stack)
         else:
             print node
-            print ""
             
 
 
