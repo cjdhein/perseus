@@ -1,0 +1,17 @@
+Information about the log files:
+
+The log files created by the web crawler are written in XML.
+
+<crawler_log> indicates this file contains data from the crawler (either page data or error code)
+
+	<error> is used when the web crawler encounters an error, and contains the following tags:
+		<code> provides a numeric code for the error
+		<text> provides a description of the error
+
+
+	<page> is used for each web page the crawler visits, and contains the following tags:
+		<id> is a numeric code for the page, and must be unique for each page in the log file
+		<title> is the title of the web page
+		<URL> is the URL of the web page
+		<parent_id> is the id of the parent page (not required for the starting page)
+		<keyword /> is used only if the current page contains the keyword (not required otherwise)

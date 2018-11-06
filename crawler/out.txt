@@ -1,0 +1,45 @@
+UID:	0
+URL:	https://www.taylorstitch.com/
+TITLE:	Classic Mens Clothing | Taylor Stitch
+PARENT UID:	ROOT NODE
+
+UID:	1
+URL:	https://www.taylorstitch.com/cart
+TITLE:	Your Shopping Cart - Classic Mens Clothing | Taylor Stitch
+PARENT UID:	0
+
+UID:	2
+URL:	https://www.taylorstitch.com/cart
+TITLE:	Your Shopping Cart - Classic Mens Clothing | Taylor Stitch
+PARENT UID:	1
+
+UID:	3
+URL:	https://www.taylorstitch.com/account/login
+TITLE:	Account - Classic Mens Clothing | Taylor Stitch
+PARENT UID:	2
+
+UID:	4
+URL:	https://www.taylorstitch.com/pages/the-common-club
+TITLE:	The Common Club - Classic Mens Clothing | Taylor Stitch
+PARENT UID:	3
+
+UID:	5
+URL:	https://www.taylorstitch.com/collections/mens-bottoms
+TITLE:	Men's Bottoms, Men's Pants - Classic Men's Clothin...
+PARENT UID:	4
+
+UID:	6
+URL:	https://www.taylorstitch.com/collections/mens-in-stock
+TITLE:	Men's In Stock - Classic Mens Clothing | Taylor Stitch
+PARENT UID:	5
+
+UID:	7
+URL:	https://www.taylorstitch.com/collections/mens-footwear
+TITLE:	Men's Footwear - Classic Mens Clothing | Taylor Stitch
+PARENT UID:	6
+
+UID:	8
+URL:	https://www.taylorstitch.com/help
+TITLE:	Taylor Stitch
+PARENT UID:	7
+
