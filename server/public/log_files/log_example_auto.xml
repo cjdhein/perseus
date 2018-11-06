@@ -1,0 +1,540 @@
+<crawler_log>
+  <page>
+    <id>43</id>
+    <url>https://www.starbucks.com/account/create</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>80</id>
+    <url>https://www.starbucks.com/responsibility/environment</url>
+    <title>Environment | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>36</id>
+    <url>https://www.starbucks.com/responsibility</url>
+    <title>Corporate Social Responsibility |Starbucks Mission Statement | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>1</id>
+    <url>https://www.starbucks.com/seattle</url>
+    <title>Events in Seattle | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>58</id>
+    <url>https://www.starbucks.com/responsibility/community/veterans</url>
+    <title>Starbucks Veterans and Military Support | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>30</id>
+    <url>https://www.starbucks.com/partners</url>
+    <title>Starbucks Coffee Company | Starbucks Partners | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>50</id>
+    <url>https://www.starbucks.com/account</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>55</id>
+    <url>https://www.starbucks.com/card</url>
+    <title>Starbucks Gift Card | Perfect Gifts for Coffee Lovers | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>24</id>
+    <url>https://www.starbucks.com/responsibility/environment/recycling</url>
+    <title>Recycling &amp; Reducing Waste| Starbucks Coffee Company | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>54</id>
+    <url>https://www.starbucks.com/account/signin</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>7</id>
+    <url>https://www.starbucks.com/account/card/transfer</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>4</id>
+    <url>https://www.starbucks.com/coffeehouse</url>
+    <title>Coffeehouse | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>40</id>
+    <url>https://www.starbucks.com/coffee/espresso</url>
+    <title>Espresso | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>78</id>
+    <url>https://athome.starbucks.com/verismo</url>
+    <title>Verismo System by Starbucks | Starbucks Coffee At Home</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>14</id>
+    <url>https://www.starbucks.com/responsibility/community/foodshare</url>
+    <title>FoodShare: Hunger relief in action | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>29</id>
+    <url>https://www.starbucks.com/googleassistant</url>
+    <title>Order on the way with the Google Assistant | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>23</id>
+    <url>https://www.starbucks.com/card/rewards</url>
+    <title>Starbucks RewardsTM | A Rewards Program Designed for You | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>84</id>
+    <url>https://athome.starbucks.com/coffees-by-format/k-cup-pods</url>
+    <title>K-Cup Pods | Starbucks Coffee At Home</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>51</id>
+    <url>https://www.starbucks.com</url>
+    <title>&#13;
+    Starbucks  The Best Coffee and Espresso Drinks&#13;
+</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>79</id>
+    <url>https://www.starbucks.com/account/Home</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>44</id>
+    <url>https://www.starbucks.com/coffeehouse/community</url>
+    <title>Online Community | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>13</id>
+    <url>https://www.starbucks.com/responsibility/community</url>
+    <title>Community | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>47</id>
+    <url>https://starbuckschannel.com/originals/veterans</url>
+    <title>Veterans | The Starbucks Channel</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>73</id>
+    <url>http://www.twitter.com/starbucks</url>
+    <title>Starbucks Coffee (@Starbucks) | Twitter</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>65</id>
+    <url>https://www.starbucks.com/gift-cards/manage/history</url>
+    <title>Transaction History | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>41</id>
+    <url>http://lp.starbucks.com/coldbrew</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>39</id>
+    <url>https://www.pinterest.com/starbucks</url>
+    <title>Starbucks (starbucks) on Pinterest</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>26</id>
+    <url>https://www.starbucks.com/menu/food/petites</url>
+    <title>Explore our Menu | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>49</id>
+    <url>https://starbuckschannel.com/originals/women-in-coffee</url>
+    <title>Women in Coffee | The Starbucks Channel</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>59</id>
+    <url>https://www.starbucks.com/menu/drinks/espresso</url>
+    <title>Explore our Menu | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>53</id>
+    <url>http://www.starbucks.com/promo/tea</url>
+    <title>Loose leaf tea, Teavana tea and more | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>10</id>
+    <url>https://customerservice.starbucks.com/app/contact/ask</url>
+    <title>Contact Us | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>52</id>
+    <url>https://www.starbucks.com/menu/nutrition</url>
+    <title>Small changes add up to a big impact | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>32</id>
+    <url>https://www.starbucks.com/menu/food</url>
+    <title>Feel good food | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>62</id>
+    <url>https://www.starbucks.com/menu/food/bakery</url>
+    <title>Explore our Menu | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>5</id>
+    <url>https://www.starbucks.com/shop/card/egift</url>
+    <title>Starbucks Card | Give a Gift by Email | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>85</id>
+    <url>https://www.starbucks.com/promo/music</url>
+    <title>Spotify | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>21</id>
+    <url>https://athome.starbucks.com/coffee-finder</url>
+    <title>Find The Coffee That Suits You  | Starbucks Coffee At Home</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>38</id>
+    <url>https://customerservice.starbucks.com</url>
+    <title>Customer Service | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>64</id>
+    <url>https://www.starbucks.com/responsibility/learn-more/relationships</url>
+    <title>Our Relationships | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>69</id>
+    <url>https://www.starbucksreserve.com/en-us/visit</url>
+    <title>HTTP Error 403: ModSecurity Action</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>28</id>
+    <url>https://www.starbucks.com/menu</url>
+    <title>Starbucks Menu | Quick Breakfast Ideas | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>66</id>
+    <url>https://www.starbucks.com/responsibility/sourcing/cocoa</url>
+    <title>Ethically Sourced Cocoa | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>70</id>
+    <url>https://www.starbuckscardb2b.com</url>
+    <title>&#13;
+		Starbucks B2B Cards</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>8</id>
+    <url>http://athome.starbucks.com</url>
+    <title>Starbucks Coffee At Home |</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>72</id>
+    <url>http://www.starbucks.com/promo/nutrition</url>
+    <title>Small changes add up to a big impact | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>74</id>
+    <url>https://www.starbucks.com/promo/mercato</url>
+    <title>Starbucks Mercato | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>3</id>
+    <url>https://starbucks.cashstar.com/self_service/register</url>
+    <title>Starbucks Self Service</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>15</id>
+    <url>https://www.starbucks.com/account/card/reload</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>18</id>
+    <url>https://starbuckschannel.com/about</url>
+    <title>About | The Starbucks Channel</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>87</id>
+    <url>https://www.starbucks.com/promo/proteinbox</url>
+    <title>Protein Boxes | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>71</id>
+    <url>https://www.starbucks.com/business</url>
+    <title>For Business | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>16</id>
+    <url>http://news.starbucks.com</url>
+    <title>Featured News | Starbucks Newsroom</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>63</id>
+    <url>https://www.starbucks.com/account/create/register</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>46</id>
+    <url>https://www.starbucks.com/promo/nutrition</url>
+    <title>Small changes add up to a big impact | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>6</id>
+    <url>https://www.starbucks.com/responsibility/sourcing</url>
+    <title>Starbucks Ethical Sourcing | Sustainable Products | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>19</id>
+    <url>https://www.starbucks.com/business/foodservice</url>
+    <title>Starbucks Branded Solutions  | Home</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>37</id>
+    <url>https://www.starbucksreserve.com/en-us/coffee</url>
+    <title>HTTP Error 403: ModSecurity Action</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>42</id>
+    <url>https://www.starbucks.com/careers</url>
+    <title>Starbucks Careers:  Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>61</id>
+    <url>https://www.starbucks.com/coffee/learn/clover</url>
+    <title>The Clover Brewing System | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>86</id>
+    <url>https://www.starbucks.com/business/suppliers</url>
+    <title>Supplier Guidance | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>2</id>
+    <url>http://www.youtube.com/starbucks</url>
+    <title>  Starbucks Coffee
+ - YouTube</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>17</id>
+    <url>https://www.starbucks.com/customer-service/faqs/coffeehouse</url>
+    <title>Customer Service | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>45</id>
+    <url>https://www.starbucks.com/responsibility/sourcing/suppliers</url>
+    <title>Supplier Diversity Program | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>34</id>
+    <url>https://starbuckschannel.com/originals</url>
+    <title>Originals | The Starbucks Channel</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>31</id>
+    <url>https://www.starbucks.com/responsibility/sourcing/coffee</url>
+    <title>Responsibly Grown and Fair Trade Coffee | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>83</id>
+    <url>https://www.starbucks.com/coffee</url>
+    <title>&#13;
+    The Best Coffee from Starbucks Coffee&#13;
+</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>82</id>
+    <url>https://www.starbucks.com/green-apron-delivery</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>60</id>
+    <url>https://www.starbucks.com/menu/drinks</url>
+    <title>The most delicious drinks are Starbucks drinks | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>75</id>
+    <url>https://www.starbucksreserve.com/en-us/locations</url>
+    <title>HTTP Error 403: ModSecurity Action</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>27</id>
+    <url>https://www.starbucks.com/menu/drinks/tea</url>
+    <title>Loose leaf tea, Teavana tea and more | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>77</id>
+    <url>https://instagram.com/starbucks</url>
+    <title>
+Starbucks Coffee  (@starbucks)  Instagram photos and videos
+</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>68</id>
+    <url>https://www.starbucks.com/coffeehouse/mobile-apps/mystarbucks</url>
+    <title>Starbucks App for iPhone | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>11</id>
+    <url>http://customerservice.starbucks.com/app/answers/detail/a_id/2286/kw/community</url>
+    <title>How does my organization receive a donation from Starbucks?</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>9</id>
+    <url>https://www.starbucks.com/promo/military</url>
+    <title>Proudly Serving Those Who Serve | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>81</id>
+    <url>https://plus.google.com/117575809843355974839</url>
+    <title>Starbucks Coffee - Google+</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>25</id>
+    <url>https://www.starbucks.com/menu/nutrition/food</url>
+    <title>Explore our Menu | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>22</id>
+    <url>https://ideas.starbucks.com</url>
+    <title>Submit Your Idea</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>57</id>
+    <url>https://starbuckschannel.com/originals/upstanders-season-2</url>
+    <title>Upstanders Season 2 | The Starbucks Channel</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>20</id>
+    <url>http://www.facebook.com/starbucks</url>
+    <title>Starbucks - 1,656 Photos - Food &amp; Beverage Company - </title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>35</id>
+    <url>http://tea.starbucks.com</url>
+    <title>New Teavana Shaken Iced Tea Infusions | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>76</id>
+    <url>https://www.starbucks.com/responsibility/sourcing/tea</url>
+    <title>Ethically Sourced Tea | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>67</id>
+    <url>https://www.starbucks.com/account/card/loststolen</url>
+    <title>None</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>56</id>
+    <url>https://www.starbucks.com/responsibility/learn-more/policies</url>
+    <title>Policies | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>48</id>
+    <url>https://www.starbucks.com/coffee/learn/format</url>
+    <title>Explore our Coffees | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>33</id>
+    <url>https://www.starbucks.com/menu/drinks/refreshers</url>
+    <title>Explore our Menu | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>12</id>
+    <url>http://customerservice.starbucks.com/app/answers/list/session/L3RpbWUvMTM3MTUxNjMzMi9zaWQvQXUySUtfc2w%3D/c/115</url>
+    <title>Answers | Starbucks Coffee Company</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>0</id>
+    <url>http://www.starbucks.com</url>
+    <title>&#13;
+    Starbucks  The Best Coffee and Espresso Drinks&#13;
+</title>
+    <parent_id>root</parent_id>
+  </page>
+</crawler_log>
