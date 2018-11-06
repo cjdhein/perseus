@@ -1,6 +1,6 @@
 from urlparse import urlparse
 import re
-
+import pdb
 
 class WebParser:
 
@@ -19,6 +19,7 @@ class WebParser:
 
 
     def getPageTitle(self,soup):
+        pdb.set_trace()
         return soup.find('title').string
 
     def linkFindHelper(self,tag):
