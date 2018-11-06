@@ -20,8 +20,6 @@ limit = int(args[2])
 # Searchtype: 1 = DFS, 2 = BFS 
 search = 1
 search = int(args[3])
-# Searchtype: 1 = DFS, 2 = BFS 
-search = 2
 
 # Keyword search not implemented into pagetree / pagenode yet
 keyword = None

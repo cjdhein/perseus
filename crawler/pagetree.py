@@ -32,6 +32,7 @@ class PageTree:
             self.crawlBFS()
 
     def crawlDFS(self):
+        print "Search DFS"
 
         wc = self.webCrawler
         self.activeNode = self.rootNode
@@ -40,11 +41,9 @@ class PageTree:
         while self.curLevel <= self.limit and not self.activeNode.getKeywordStatus():
             fo = open("log.txt","a")        
             aNode = self.activeNode
-            print "Node: " + str(aNode.uid) + "\t Level: " + str(self.curLevel) + " URL: " + aNode.nodeUrl
             
             # if the active node has not been crawled
             if aNode.getCrawledStatus() == False:
-                print "Node not crawled. Crawling"
 
                 # trigger the crawl and store return status in retStat
                 retStat = wc.crawl(aNode)
@@ -63,12 +62,9 @@ class PageTree:
                 # Error occurred, so we back-up to parent node
                 elif retStat == 2:
                     fo.write("Error in page\n")
-                    print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
                     self.activeNode = aNode.parentNode 
                     fo.close()
                     continue
-            else:
-              print "Already crawled"
              
             # Execution here means the node has been crawled
             
@@ -99,7 +95,6 @@ class PageTree:
 
             # No URLs available
             else:
-                print "list length < 1"
                 # Set aNode to the parent node in order to grab a new URL from there
                 if aNode.parentNode is None:
                     self.currentLevel = self.limit + 1
@@ -109,6 +104,7 @@ class PageTree:
 
 
     def crawlBFS(self):
+        print "Search BFS"
         wc = self.webCrawler
         
         # Used to efficiently implement BFS method
@@ -127,11 +123,8 @@ class PageTree:
             self.activeNode = q.popleft()
             fo = open("log.txt","a")
             aNode = self.activeNode
-            print "Node: " + str(aNode.uid) + "\t Level: " + str(self.curLevel) + " URL: " + aNode.nodeUrl
-
             # If the node was not crawled, crawl it
             if aNode.getCrawledStatus() == False:
-                print "Node not crawled. Crawling"
                 retStat = wc.crawl(aNode)
                 
                 # Return codes:
@@ -150,8 +143,6 @@ class PageTree:
                     self.activeNode = aNode.parentNode
                     fo.close()
                     continue
-            else:
-                print "Already crawled"
             
             # Loop while there are still URLs to visit
             while (len(aNode.urlList)) >= 1:
@@ -172,7 +163,6 @@ class PageTree:
         return self.idCount
 
     def printTree(self):
-
         self.activeNode = self.rootNode
         stack = []
         self.traverse(self.activeNode,stack)
@@ -186,8 +176,10 @@ class PageTree:
             nextNode = stack.pop()
             self.traverse(nextNode,stack)
         else:
-            print node
-            
+            if node.visited == False:
+                node.visitNode()
+                print ""
+                print node
 
 
 

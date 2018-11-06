@@ -1,5 +1,6 @@
 import unicodedata
 from types import *
+import pdb
 
 class PageNode:
 
@@ -12,18 +13,15 @@ class PageNode:
         self.parentNode = parent
         self.nodeDict = dict() #constructed nodes that are children of this node
         self.urlList = [] #raw urls found from the crawler - NOT visited
-        self.nodeTitle = ""
+        self.nodeTitle = "No title for node"
         self.crawled = False
+        self.visited = False
     def __str__(self):
         if self.parentNode == None:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) + "\nPARENT UID:\tROOT NODE"
         else:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) +  "\nPARENT UID:\t" + str(self.parentNode.uid)
-        #return retString
-        if self.parentNode == None:
-            return "UID:\t" + str(self.uid) + "\tPUID:\tROOT"
-        else:
-            return "UID:\t" + str(self.uid) + "\tPUID:\t" + str(self.parentNode.uid)
+        return retString
 
     def getCrawledStatus(self):
         return self.crawled
@@ -42,6 +40,11 @@ class PageNode:
     def printUrls(self):
         for elem in self.urlList.items():
             print elem
+
+    def visitNode(self):
+        self.visited = True
+
+
     # Returns the first unvisited child node
     # NOTE: Must follow a call to hasUnvisited() to ensure there are unvisited children
     def getUnvisited(self):
