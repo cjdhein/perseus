@@ -2,6 +2,7 @@ from urlparse import urlparse
 import re
 import pdb
 
+
 class WebParser:
 
     def parseKeyword(self, soup, keyword):
@@ -34,7 +35,6 @@ class WebParser:
     # Desc:     parses provided BeautifulSoup object for all links and constructs full urls out of them
     # Args:     soup - a beautiful soup 4 object with html; url - the url the soup belongs to
     # Returns:  dict with each unique, full url, link found in the html
-
     def parseUrls(self,soup,url):
 
         uniqueLinks = {}
@@ -46,6 +46,7 @@ class WebParser:
         urlInfo = urlparse(url)
 
         # base of our url
+
         if len(urlInfo.scheme) <= 0:
             print "da hek?"
             print urlInfo

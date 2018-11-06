@@ -40,4 +40,3 @@ testTree = PageTree(outfile, startUrl, limit, search, keyword)
 # Begin the crawl
 testTree.beginCrawl()
 testTree.printTreeXML()
-

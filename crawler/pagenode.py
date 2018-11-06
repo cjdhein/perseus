@@ -89,5 +89,3 @@ class PageNode:
     
     def setKeywordStatus(self,status):
         self.keywordFound = status
-
-    

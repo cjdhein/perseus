@@ -6,7 +6,6 @@ from webparser import WebParser
 from pagenode import PageNode
 import pdb
 
-
 class WebCrawler:
     # Performs crawling of provided web address
 
@@ -17,7 +16,6 @@ class WebCrawler:
         if keyword is None:
             self.keywordExists = False
         else:
-            print "Setting keyword"
             self.keywordExists = True
             self.keyword = keyword
     
@@ -58,6 +56,7 @@ class WebCrawler:
         self.urlDict = self.parser.parseUrls(theSoup, loadedUrl)
         
         page.setCrawledStatus(True)
+        
         # Check if any urls were parsed
         if len(self.urlDict.keys()) > 0:
             # If they were, pass parsed urls to the pageNode's urlList
