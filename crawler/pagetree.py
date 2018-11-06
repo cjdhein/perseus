@@ -28,6 +28,7 @@ class PageTree:
         self.activeNode = None
 
         random.seed()
+
     def beginCrawl(self):
         if self.searchType == 1:
             self.crawlDFS()
@@ -167,31 +168,10 @@ class PageTree:
             self.curLevel += 1
             fo.close()
 
-    def beginCrawl(self):
-        wc = self.webCrawler
-        
-        if self.searchType == 1: #DFS
-            self.activeNode = self.rootNode
-            
-            while self.curLevel <= self.limit:
-                aNode = self.activeNode
-                wc.crawl(aNode)
-                print aNode                
-                print ""
-                
-                i = random.randrange(len(aNode.urlList))
-                aNode.urlList[i], aNode.urlList[-1] = aNode.urlList[-1], aNode.urlList[i]
-                newUrl = aNode.urlList.pop()
-                newId = self.getUID()
-                newNode = PageNode(aNode, newId, newUrl)
-                aNode.nodeList.append(newNode)
-                self.curLevel += 1
-                self.activeNode = newNode
                 
     def getUID(self):
         self.idCount += 1
         return self.idCount
-
 
     def printTree(self):
         self.activeNode = self.rootNode
@@ -222,7 +202,7 @@ class PageTree:
         stack = []
         self.traverseXML(self.activeNode,stack,xmlRoot)
 
-        xmlOut = open("../server/logfiles/" + self.outfile,"w")
+        xmlOut = open("../server/public/log_files/" + self.outfile,"w")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()
 
@@ -258,5 +238,11 @@ class PageTree:
             if len(stack) >= 1:
                 nextNode = stack.pop()
                 self.traverseXML(nextNode,stack,root)
+
+
+
+
+
+
 
 

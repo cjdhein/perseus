@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 
 var path = "/public/log_files/"; //Path where log files are stored
 
-app.set("port", 3540);
+app.set("port", 9555);
 app.use(express.static("public"));
 
 // Homepage
@@ -26,7 +26,7 @@ app.post("/post", function(req, res) {
 
 
 
-	var filename = "log_example_5.xml";
+	var filename = "log_example_auto.xml";
 
 	try {
 		if (fs.existsSync(__dirname + path + filename)) {
