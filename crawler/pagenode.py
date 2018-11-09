@@ -6,7 +6,7 @@ class PageNode:
 
     #represents a node in the tree - each node being a web page
 
-    def __init__(self, parent, uid, url):
+    def __init__(self, parent, uid, url, level):
         self.nodeUrl = url
         self.keywordFound = False
         self.uid = uid
@@ -16,6 +16,8 @@ class PageNode:
         self.nodeTitle = "No title for node"
         self.crawled = False
         self.visited = False
+        self.level = level
+
     def __str__(self):
         if self.parentNode == None:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) + "\nPARENT UID:\tROOT NODE"
@@ -23,6 +25,9 @@ class PageNode:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) +  "\nPARENT UID:\t" + str(self.parentNode.uid)
         return retString
 
+    def getLevel(self):
+        return self.level
+    
     def getCrawledStatus(self):
         return self.crawled
 
@@ -47,7 +52,7 @@ class PageNode:
         if self.parentNode is not None:
             return self.parentNode.uid
         else:
-            return "root"
+            return None
 
     def getUrl(self):
         return self.nodeUrl

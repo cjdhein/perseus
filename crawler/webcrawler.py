@@ -18,7 +18,7 @@ class WebCrawler:
         else:
             self.keywordExists = True
             self.keyword = keyword
-    
+
     def __str__(self):
         # return string representation of self
 
