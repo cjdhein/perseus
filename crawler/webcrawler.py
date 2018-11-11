@@ -44,7 +44,6 @@ class WebCrawler:
     def crawl(self, page, crawlType):
 
         # Check if nodeUrl has a valid scheme (http / https). If not, pre-pend http scheme to it
-        pdb.set_trace()
         parsedUrl = urlparse(page.nodeUrl)
 
         # if a scheme was not found / recognized
@@ -68,19 +67,18 @@ class WebCrawler:
             page.setError(theSoup)
             return 2
         
-        if DEBUG:
-            print self.parser.getPageTitle(theSoup)
+        # if DEBUG:
+        #     print self.parser.getPageTitle(theSoup)
         page.setTitle(self.parser.getPageTitle(theSoup))
-
-        # Parse the URLs from gathered soup
-        self.urlDict = self.parser.parseUrls(theSoup, loadedUrl)
-        
         page.setCrawledStatus(True)
         
-        # Check if any urls were parsed
-        if len(self.urlDict.keys()) > 0:
-            # If they were, pass parsed urls to the pageNode's urlList
-            page.urlList = self.urlDict.keys()
+        if crawlType == 0:
+            # Parse the URLs from gathered soup
+            self.urlDict = self.parser.parseUrls(theSoup, loadedUrl)
+            # Check if any urls were parsed
+            if len(self.urlDict.keys()) > 0:
+                # If they were, pass parsed urls to the pageNode's urlList
+                page.urlList = self.urlDict.keys()        
         
         # If a keyword exists, look for the keyword in text. Returns True if found
         if self.keywordExists:

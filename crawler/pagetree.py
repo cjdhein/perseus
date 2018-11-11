@@ -143,9 +143,6 @@ class PageTree:
 
         # Set as activeNode to ensure first loop runs
         self.activeNode = self.rootNode
-       
-        # Flag to break out of loop
-        breakLoop = False
 
         # Loop while the limit has not been hit, the queue is not empty, and we have not hit the keyword
         while len(currentQ) >= 1 and not self.activeNode.getKeywordStatus():
@@ -161,7 +158,7 @@ class PageTree:
                 # If the limit has been reached, we can do a fast crawl to just get the title and check for the keyword.
                 # Trigger the crawl with appropriate crawlType and store return status in retStat.
                 # 0 = Full, 1= Fast 
-                if self.curLevel < self.limit:    
+                if aNode.level < self.limit:    
                     retStat = wc.crawl(aNode, 0)
                 else:
                     retStat = wc.crawl(aNode, 1)
@@ -186,9 +183,11 @@ class PageTree:
                     else:
                         self.activeNode = aNode.parentNode 
                     continue
-            
+            else:
+                aNode.setTitle(self.crawled[aNode.nodeUrl].getTitle())
+
             # Loop while there are still URLs to visit
-            while (len(aNode.urlList)) >= 1 and aNode.level <= self.limit:
+            while (len(aNode.urlList)) >= 1 and self.currentLevel <= self.limit:
 
                 # get new url
                 newUrl = aNode.urlList.pop()
@@ -205,21 +204,21 @@ class PageTree:
                 if self.crawled.has_key(newUrl):
                     if DEBUG:
                         print "Already crawled " + newUrl + " uid: " + str(self.crawled[newUrl].getUid())
+                    newNode.setTitle(self.crawled[newUrl].getTitle())
                 else:
                     nextQ.append(newNode)
-
-                if self.currentLevel == self.limit:
-                    wc.titleCrawl(newNode)
+                
 
             # Check if current queue is empty and we still have levels left
-            if len(currentQ) <= 0 and self.currentLevel != self.limit:
-                self.currentLevel += 1
-                
+            if len(currentQ) <= 0 and self.currentLevel <= self.limit:
+
                 # set to nextQ to start the next level
                 currentQ = nextQ
 
                 # reset the next queue
                 nextQ = deque()
+                
+                self.currentLevel += 1
 
             self.crawled[aNode.nodeUrl] = aNode
 
@@ -279,4 +278,18 @@ class PageTree:
  
         if len(q) >= 1:
             nextNode = q.popleft()
-            self.traverseXML2(nextNode,q,root)
+            self.traverseXML(nextNode,q,root)
+
+    def writeErrorLog(self):
+        xmlRoot = etree.Element("crawler_log")
+        xmlDoc = etree.ElementTree(xmlRoot)
+
+        errorNode = etree.SubElement(xmlRoot,"error")
+        errorCode = etree.SubElement(errorNode,"code")
+        errorCode.text = str(1)
+        errorText = etree.SubElement(errorNode,"text")
+        errorText.text = self.rootNode.getError()
+
+        xmlOut = open(LOGDIRECTORY + self.outfile,"w")
+        xmlDoc.write(xmlOut,pretty_print=True)
+        xmlOut.close()            
