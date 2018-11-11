@@ -259,4 +259,3 @@ class PageTree:
                 nextNode = stack.pop()
                 self.traverseXML(nextNode,stack,root)
 
-

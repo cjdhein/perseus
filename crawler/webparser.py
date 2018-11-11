@@ -93,4 +93,3 @@ class WebParser:
                 uniqueLinks[urlToAdd] = 1
 
         return uniqueLinks
-
