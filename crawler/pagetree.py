@@ -5,8 +5,11 @@ import pdb
 from collections import deque
 from lxml import etree
 
+# print debug text if true
 DEBUG = True
 
+# hold directory path for the log directory
+LOGDIRECTORY = "../server/public/log_files/"
 class PageTree:
 
     def __init__ (self,outfile, startUrl, limit, searchType, keyword):
@@ -24,18 +27,31 @@ class PageTree:
         self.currentLevel = 1
         self.webCrawler = WebCrawler(keyword)
         self.idCount = -1
+        # 0 represents root level
         self.rootNode = PageNode(None,self.getUID(),startUrl,0) 
         self.activeNode = None
-
+        self.rootError = None
         self.crawled = dict()
 
         random.seed()
 
     def beginCrawl(self):
         if self.searchType == 1:
-            self.crawlDFS()
+            returnStatus = self.crawlDFS()
+            # Error on root node. Write an error log file
+            if returnStatus == 2:
+                self.writeErrorLog()
+            # At least one successfully read node, so write normal log file
+            else:
+                self.writeLogFile()            
         else:
-            self.crawlBFS()
+            returnStatus = self.crawlBFS()
+            # Error on root node. Write an error log file
+            if returnStatus == 2:
+                self.writeErrorLog()
+            # At least one successfully read node, so write normal log file
+            else:
+                self.writeLogFile()            
 
     def crawlDFS(self):
         if DEBUG:
@@ -45,41 +61,39 @@ class PageTree:
         self.activeNode = self.rootNode
         
         # Loop while we have not hit the limit and the keyword status is false
-        while self.currentLevel <= self.limit and not self.activeNode.getKeywordStatus():
-            fo = open("log.txt","a")        
+        while self.currentLevel <= self.limit:
             aNode = self.activeNode
             
             # if the active node has not been crawled
             if not self.crawled.has_key(aNode.nodeUrl):
 
-                # trigger the crawl and store return status in retStat
-                retStat = wc.crawl(aNode)
+                # trigger the crawl and store return status in retStat. 0 for full crawl.
+                retStat = wc.crawl(aNode, 0)
+
+                # Add the URL to the crawled dictionary
+                self.crawled[aNode.nodeUrl] = aNode.urlList
 
                 # Return codes:
                 #   0: good return
                 #   1: found keyword
                 #   2: Error opening URL
                 if retStat == 1:
-                    fo.write("Keyword found\n")
                     # Set keyword status to true and continue to next loop interation to break out
                     aNode.setKeywordStatus(True)
-                    self.crawled[aNode.nodeUrl] = aNode.urlList
-                    continue
-                  
+                    return 1
 
-                # Error occurred, so we back-up to parent node
+                # Error occurred
                 elif retStat == 2:
-                    fo.write("Error in page\n")
-                    self.crawled[aNode.nodeUrl] = aNode.urlList
-                    self.activeNode = aNode.parentNode 
-                    fo.close()
-                    continue
-                else:
-                    self.crawled[aNode.nodeUrl] = aNode.urlList
+                    # if this is the root node, we return the error code and exit
+                    if self.activeNode == self.rootNode:
+                        return 2                    
+                    # If not, we back set the active node to the parent node
+                    else:
+                        self.activeNode = aNode.parentNode 
+                    continue                    
 
              
             # Execution here means the node has been crawled
-            
             # get length of urlList
             listLen = len(aNode.urlList)
 
@@ -102,8 +116,6 @@ class PageTree:
                 # Set a new active node, and go down a level
                 self.currentLevel += 1
                 self.activeNode = newNode
-                fo.write(aNode.__str__())
-                fo.write("\n\n")
 
             # No URLs available
             else:
@@ -112,9 +124,6 @@ class PageTree:
                     self.currentLevel = self.limit + 1
                 self.activeNode = aNode.parentNode 
 
-            self.crawled[aNode] = aNode.urlList
-            fo.close()
-
 
     def crawlBFS(self):
         if DEBUG:
@@ -122,11 +131,15 @@ class PageTree:
         wc = self.webCrawler
         
         # Used to efficiently implement BFS method
-        q = deque()
-        q2 = deque()
+        # currentQ is the queue currently being processed
+        # nextQ is the queue of nodes to be processed after the current nodes are done. 
+        #   currentQ will hold all nodes left to process on the current level
+        #   nextQ holds all nodes to be processed on the next level deeper
+        currentQ = deque()
+        nextQ = deque()
 
         # Start by adding the root node to the queue
-        q.append(self.rootNode)
+        currentQ.append(self.rootNode)
 
         # Set as activeNode to ensure first loop runs
         self.activeNode = self.rootNode
@@ -135,158 +148,100 @@ class PageTree:
         breakLoop = False
 
         # Loop while the limit has not been hit, the queue is not empty, and we have not hit the keyword
-        while len(q) >= 1 and not self.activeNode.getKeywordStatus():
+        while len(currentQ) >= 1 and not self.activeNode.getKeywordStatus():
 
             # Take node from the front of the queue and make it the active node
-            self.activeNode = q.popleft()
-            fo = open("log.txt","a")
+            self.activeNode = currentQ.popleft()
             aNode = self.activeNode
+
             # If the node was not crawled, crawl it
             if not self.crawled.has_key(aNode.nodeUrl):
-                retStat = wc.crawl(aNode)
+                
+                # Branch depending on whether the current level is the limit. If it is not the limit, we proceed with a full crawl, gather all URLs from the node.
+                # If the limit has been reached, we can do a fast crawl to just get the title and check for the keyword.
+                # Trigger the crawl with appropriate crawlType and store return status in retStat.
+                # 0 = Full, 1= Fast 
+                if self.curLevel < self.limit:    
+                    retStat = wc.crawl(aNode, 0)
+                else:
+                    retStat = wc.crawl(aNode, 1)
+                
+                # Add the URL to the crawled dictionary
+                self.crawled[aNode.nodeUrl] = aNode
+
                 # Return codes:
                 #   0: good return
                 #   1: found keyword
                 #   2: Error opening URL
                 if retStat == 1:
-                    fo.write("Keyword found\n")
                     # Set keyword status to true and continue to next loop interation to break out
                     aNode.setKeywordStatus(True)
-                    self.crawled[aNode.nodeUrl] = aNode
                     continue
-                # Error occured, go back to parent Node for next node 
+                # Error occured, 
                 elif retStat == 2:
-                    fo.write("Error in page\n")
-                    if DEBUG:
-                        print "Error found, setting activeNode to parent Node. Active: " + str(self.activeNode.uid) + " Parent: " + str(aNode.parentNode.uid)
-                    self.activeNode = aNode.parentNode
-                    self.crawled[aNode.nodeUrl] = aNode
-                    fo.close()
+                    # if this is the root node, we return the error code and exit
+                    if self.activeNode == self.rootNode:
+                        return 2                    
+                    # Otherwise - go back to parent Node for next node 
+                    else:
+                        self.activeNode = aNode.parentNode 
                     continue
-                else:
-                    self.crawled[aNode.nodeUrl] = aNode
-
             
             # Loop while there are still URLs to visit
             while (len(aNode.urlList)) >= 1 and aNode.level <= self.limit:
+
+                # get new url
                 newUrl = aNode.urlList.pop()
+
+                # get next unique ID
+                newId = self.getUID()
+                
+                # create a new node
+                newNode = PageNode(aNode,newId,newUrl,self.currentLevel)
+                
+                # Add the new node to the current node's dict, with a 0 to indicate it has not been visited                    
+                aNode.nodeDict[newNode] = 0
+
                 if self.crawled.has_key(newUrl):
-                    print "Already crawled " + newUrl + " uid: " + str(self.crawled[newUrl].getUid())
-                    #test
-                    newId = self.getUID()
-                    newNode = PageNode(aNode,newId,newUrl,self.currentLevel)
-                    aNode.nodeDict[newNode] = 0
+                    if DEBUG:
+                        print "Already crawled " + newUrl + " uid: " + str(self.crawled[newUrl].getUid())
                 else:
-                    newId = self.getUID()
-                    newNode = PageNode(aNode, newId, newUrl, self.currentLevel)
-                    aNode.nodeDict[newNode] = 0
-                    q2.append(newNode)
+                    nextQ.append(newNode)
 
                 if self.currentLevel == self.limit:
                     wc.titleCrawl(newNode)
 
-                fo.write(newNode.__str__())
-                fo.write("\n\n")
-            
-            if len(q) <= 0 and self.currentLevel != self.limit:
+            # Check if current queue is empty and we still have levels left
+            if len(currentQ) <= 0 and self.currentLevel != self.limit:
                 self.currentLevel += 1
-                q = q2
-                q2 = deque()
+                
+                # set to nextQ to start the next level
+                currentQ = nextQ
+
+                # reset the next queue
+                nextQ = deque()
+
             self.crawled[aNode.nodeUrl] = aNode
-            fo.close()
 
                 
     def getUID(self):
         self.idCount += 1
         return self.idCount
 
-    def printTree(self):
-        self.activeNode = self.rootNode
-        stack = []
-        self.traverse(self.activeNode,stack)
-        
-    def traverse(self, node, stack):
-        if node.hasUnvisited():
-            stack.append(node)
-            nextNode = node.getUnvisited()
-            self.traverse(nextNode,stack)
-            
-        else:
-            if node.visited == False:
-                node.visitNode()
-                if DEBUG:
-                    print ""
-                    print node
-            nextNode = stack.pop()
-            self.traverse(nextNode,stack)
-
-    
-    def printTreeXML(self):
-        xmlRoot = etree.Element("crawler_log")
-        xmlDoc = etree.ElementTree(xmlRoot)
-        
-        self.activeNode = self.rootNode
-        stack = []
-        self.traverseXML(self.activeNode,stack,xmlRoot)
-
-        xmlOut = open("../server/public/log_files/" + self.outfile,"w")
-        xmlDoc.write(xmlOut,pretty_print=True)
-        xmlOut.close()
-
-    def traverseXML(self, node, stack, root):
-        if node.hasUnvisited():
-            stack.append(node)
-            nextNode = node.getUnvisited()
-
-            self.traverseXML(nextNode,stack,root)
-        else:
-            if node.visited == False:
-                node.visitNode()
-
-                page = etree.SubElement(root,"page")
-
-                uid = etree.SubElement(page,"id")
-                uid.text = str(node.getUid())
-
-                lvl = etree.SubElement(page,"level")
-                lvl.text = str(node.getLevel())
-
-
-                url = etree.SubElement(page,"url")
-                url.text = str(node.getUrl())
-
-                title = etree.SubElement(page,"title")
-                title.text = str(node.getTitle())
-
-                if node.getParentUid() is not None:
-                    puid = etree.SubElement(page,"parent_id")
-                    puid.text = str(node.getParentUid())
-
-                if node.getKeywordStatus():
-                    key = etree.SubElement(page,"keyword")
-                    key.text = str(True)
-
-
-                if DEBUG:
-                    print(etree.tostring(page,pretty_print=True))
-            
-            if len(stack) >= 1:
-                nextNode = stack.pop()
-                self.traverseXML(nextNode,stack,root)
-
-    def printTreeXML2(self):
+    def writeLogFile(self):
         xmlRoot = etree.Element("crawler_log")
         xmlDoc = etree.ElementTree(xmlRoot)
         
         self.activeNode = self.rootNode
         q = deque()
-        self.traverseXML2(self.activeNode,q,xmlRoot)
+        self.traverseXML(self.activeNode,q,xmlRoot)
 
-        xmlOut = open("../server/public/log_files/" + self.outfile,"w")
+        xmlOut = open(LOGDIRECTORY + self.outfile,"w")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()
 
-    def traverseXML2(self, node, q, root):
+
+    def traverseXML(self, node, q, root):
         if node.visited == False:
             node.visitNode()
 
@@ -325,9 +280,3 @@ class PageTree:
         if len(q) >= 1:
             nextNode = q.popleft()
             self.traverseXML2(nextNode,q,root)
-
-
-
-
-
-
