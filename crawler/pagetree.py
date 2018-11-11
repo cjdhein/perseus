@@ -222,7 +222,7 @@ class PageTree:
         stack = []
         self.traverseXML(self.activeNode,stack,xmlRoot)
 
-        xmlOut = open("../server/logfiles/" + self.outfile,"w")
+        xmlOut = open("../server/public/log_files/" + self.outfile,"w")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()
 
@@ -258,5 +258,4 @@ class PageTree:
             if len(stack) >= 1:
                 nextNode = stack.pop()
                 self.traverseXML(nextNode,stack,root)
-
 

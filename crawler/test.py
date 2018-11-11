@@ -27,4 +27,3 @@ print testNode2
 #    print "Found '" + keyword + "' in the text!"
 #else:
 #    print keyword + " was not found in the text."
-
