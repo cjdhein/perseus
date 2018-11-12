@@ -185,11 +185,13 @@ class PageTree:
                         self.activeNode = aNode.parentNode 
                     continue
                 else:
-                    print "Was: " + str(len(aNode.urlList))
+                    if DEBUG:
+                        print "Was: " + str(len(aNode.urlList))
                     tmpList = aNode.urlList
                     aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
-                    print "Is: " + str(len(aNode.urlList))
-                    print ""
+                    if DEBUG:
+                        print "Is: " + str(len(aNode.urlList))
+                        print ""
             else:
                 aNode.setTitle(self.crawled[aNode.nodeUrl].getTitle())
 
