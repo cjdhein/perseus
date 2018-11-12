@@ -6,7 +6,7 @@ from collections import deque
 from lxml import etree
 
 # print debug text if true
-DEBUG = True
+DEBUG = False
 
 # hold directory path for the log directory
 LOGDIRECTORY = "../server/public/log_files/"
@@ -128,6 +128,7 @@ class PageTree:
     def crawlBFS(self):
         if DEBUG:
             print "Search BFS"
+
         wc = self.webCrawler
         
         # Used to efficiently implement BFS method
@@ -183,6 +184,12 @@ class PageTree:
                     else:
                         self.activeNode = aNode.parentNode 
                     continue
+                else:
+                    print "Was: " + str(len(aNode.urlList))
+                    tmpList = aNode.urlList
+                    aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
+                    print "Is: " + str(len(aNode.urlList))
+                    print ""
             else:
                 aNode.setTitle(self.crawled[aNode.nodeUrl].getTitle())
 
@@ -233,52 +240,48 @@ class PageTree:
         
         self.activeNode = self.rootNode
         q = deque()
-        self.traverseXML(self.activeNode,q,xmlRoot)
+        q.append(self.activeNode)
+        
+        while len(q) > 0:
+            node = q.popleft()
+
+            if not node.visited:
+                node.visitNode()
+
+                page = etree.SubElement(xmlRoot,"page")
+
+                uid = etree.SubElement(page,"id")
+                uid.text = str(node.getUid())
+
+                lvl = etree.SubElement(page,"level")
+                lvl.text = str(node.getLevel())
+
+                url = etree.SubElement(page,"url")
+                url.text = str(node.getUrl())
+
+                title = etree.SubElement(page,"title")
+                title.text = str(node.getTitle())
+
+                if node.getParentUid() is not None:
+                    puid = etree.SubElement(page,"parent_id")
+                    puid.text = str(node.getParentUid())
+
+                if node.getKeywordStatus():
+                    key = etree.SubElement(page,"keyword")
+                    key.text = str(True)
+
+                if DEBUG:
+                    print(etree.tostring(page,pretty_print=True))
+            
+            if node.hasUnvisited():
+                # For each child in the nodeDict
+                for child in node.nodeDict.keys():
+                    if child.visited == False:
+                        q.append(child)
 
         xmlOut = open(LOGDIRECTORY + self.outfile,"w")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()
-
-
-    def traverseXML(self, node, q, root):
-        if node.visited == False:
-            node.visitNode()
-
-            page = etree.SubElement(root,"page")
-
-            uid = etree.SubElement(page,"id")
-            uid.text = str(node.getUid())
-
-            lvl = etree.SubElement(page,"level")
-            lvl.text = str(node.getLevel())
-
-
-            url = etree.SubElement(page,"url")
-            url.text = str(node.getUrl())
-
-            title = etree.SubElement(page,"title")
-            title.text = str(node.getTitle())
-
-            if node.getParentUid() is not None:
-                puid = etree.SubElement(page,"parent_id")
-                puid.text = str(node.getParentUid())
-
-            if node.getKeywordStatus():
-                key = etree.SubElement(page,"keyword")
-                key.text = str(True)
-
-
-            if DEBUG:
-                print(etree.tostring(page,pretty_print=True))
-           
-        if node.hasUnvisited():
-            for child in node.nodeDict.keys():
-                if child.visited == False:
-                    q.append(child)
- 
-        if len(q) >= 1:
-            nextNode = q.popleft()
-            self.traverseXML(nextNode,q,root)
 
     def writeErrorLog(self):
         xmlRoot = etree.Element("crawler_log")

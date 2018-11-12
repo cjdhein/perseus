@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup as bs
 from urlparse import urlparse
-import urllib2
+import requests
 import sys
 from webparser import WebParser
 from pagenode import PageNode
@@ -55,6 +55,10 @@ class WebCrawler:
             else:
                 # Otherwise, prepend with // and proceed
                 page.nodeUrl = 'http://' + page.nodeUrl
+        elif parsedUrl.scheme != 'http' and parsedUrl.scheme != 'https':
+            page.setTitle("Invalid scheme detected. Please use http or https.")
+            page.setError(parsedUrl.scheme + " is not a valid scheme. Please use http or https.")
+            return 2
         
         fetched = self._fetch(page.nodeUrl)
         loadedUrl = fetched[1]
@@ -100,10 +104,14 @@ class WebCrawler:
         # flesh out
         url = urlString
         followed = None
+        
         try:
-            html = urllib2.urlopen(url)
-            followed = html.geturl()
-            html = html.read()
+            response = requests.get(url, timeout=3)
+            if response.status_code == requests.codes.ok:
+                html = response.content
+                followed = response.url             
+            else:
+                response.raise_for_status()
         except:
             e = sys.exc_info()
             sys.stderr.write("Error " + str(e[0]) + ": " + str(e[1]))

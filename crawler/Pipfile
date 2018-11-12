@@ -9,6 +9,8 @@ name = "pypi"
 pyvirtualdisplay = "*"
 "beautifulsoup4" = "*"
 lxml = "*"
+requests = "*"
+grequests = "*"
 
 [requires]
 python_version = "2.7"
