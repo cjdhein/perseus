@@ -42,4 +42,3 @@ UID:	8
 URL:	https://www.taylorstitch.com/help
 TITLE:	Taylor Stitch
 PARENT UID:	7
-
