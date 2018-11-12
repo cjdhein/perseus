@@ -5,17 +5,31 @@ import pdb
 class PageNode:
 
     #represents a node in the tree - each node being a web page
-
-    def __init__(self, parent, uid, url):
+    
+    def __init__(self, parent, uid, url, level):
         self.nodeUrl = url
         self.keywordFound = False
         self.uid = uid
         self.parentNode = parent
-        self.nodeDict = dict() #constructed nodes that are children of this node
-        self.urlList = [] #raw urls found from the crawler - NOT visited
+        
+        # Constructed nodes that are children of this node
+        # The value is 0 if the node was not visited, 1 if it was
+        self.nodeDict = dict()
+        
+        # Raw urls found from the crawler
+        self.urlList = [] 
+
         self.nodeTitle = "No title for node"
         self.crawled = False
         self.visited = False
+
+        # Holds the tree level for this node
+        self.level = level
+        
+        # starts as none, if there is an error it will be the error reason
+        #   This will be set by the web crawler
+        self.error = None
+
     def __str__(self):
         if self.parentNode == None:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) + "\nPARENT UID:\tROOT NODE"
@@ -23,6 +37,9 @@ class PageNode:
             retString = "UID:\t" + str(self.uid) + "\nURL:\t" + self.nodeUrl + "\nTITLE:\t" + self.nodeTitle + "\nkeyword:\t" + str(self.keywordFound) +  "\nPARENT UID:\t" + str(self.parentNode.uid)
         return retString
 
+    def getLevel(self):
+        return self.level
+    
     def getCrawledStatus(self):
         return self.crawled
 
@@ -40,6 +57,12 @@ class PageNode:
     def getTitle(self):
         return self.nodeTitle
 
+    def setError(self,errText):
+        self.error = errText
+
+    def getError(self):
+        return self.error
+
     def getUid(self):
         return self.uid
 
@@ -47,13 +70,13 @@ class PageNode:
         if self.parentNode is not None:
             return self.parentNode.uid
         else:
-            return "root"
+            return None
 
     def getUrl(self):
         return self.nodeUrl
 
     def printUrls(self):
-        for elem in self.urlList.items():
+        for elem in self.urlList:
             print elem
 
     def visitNode(self):
@@ -89,3 +112,5 @@ class PageNode:
     
     def setKeywordStatus(self,status):
         self.keywordFound = status
+
+    

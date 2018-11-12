@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup as bs
 from urlparse import urlparse
-import urllib2
+import requests
 import sys
 from webparser import WebParser
 from pagenode import PageNode
 import pdb
+
+DEBUG = True
 
 class WebCrawler:
     # Performs crawling of provided web address
@@ -18,7 +20,7 @@ class WebCrawler:
         else:
             self.keywordExists = True
             self.keyword = keyword
-    
+
     def __str__(self):
         # return string representation of self
 
@@ -32,35 +34,55 @@ class WebCrawler:
         else:
             return "urlDict is empty"
 
+    # crawlTypes:
+    #   0: full crawl (urls, title, keyword)
+    #   1: fast crawl (title, keyword)
     # Return codes:
     #   0: good return
     #   1: found keyword
     #   2: Error opening URL
-    def crawl(self, page):
+    def crawl(self, page, crawlType):
+
+        # Check if nodeUrl has a valid scheme (http / https). If not, pre-pend http scheme to it
+        parsedUrl = urlparse(page.nodeUrl)
+
+        # if a scheme was not found / recognized
+        if parsedUrl.scheme == '':
+            # First check if it is a scheme agnostic link
+            if page.nodeUrl[:2] == '//':
+                # If it is, prepend http: and proceed
+                page.nodeUrl = 'http:' + page.nodeUrl
+            else:
+                # Otherwise, prepend with // and proceed
+                page.nodeUrl = 'http://' + page.nodeUrl
+        elif parsedUrl.scheme != 'http' and parsedUrl.scheme != 'https':
+            page.setTitle("Invalid scheme detected. Please use http or https.")
+            page.setError(parsedUrl.scheme + " is not a valid scheme. Please use http or https.")
+            return 2
+        
         fetched = self._fetch(page.nodeUrl)
-  
         loadedUrl = fetched[1]
         theSoup = fetched[0]
         
         # if we got a string back, there was an error fetching
         # return code 2 (error)
         if type(theSoup) == str:
-            page.setTitle(theSoup)
-            page.setCrawledStatus(True)
+            page.setTitle("Invalid, broken, or otherwise unreachable URL")
+            page.setError(theSoup)
             return 2
         
-        print self.parser.getPageTitle(theSoup)
+        # if DEBUG:
+        #     print self.parser.getPageTitle(theSoup)
         page.setTitle(self.parser.getPageTitle(theSoup))
-
-        # Parse the URLs from gathered soup
-        self.urlDict = self.parser.parseUrls(theSoup, loadedUrl)
-        
         page.setCrawledStatus(True)
         
-        # Check if any urls were parsed
-        if len(self.urlDict.keys()) > 0:
-            # If they were, pass parsed urls to the pageNode's urlList
-            page.urlList = self.urlDict.keys()
+        if crawlType == 0:
+            # Parse the URLs from gathered soup
+            self.urlDict = self.parser.parseUrls(theSoup, loadedUrl)
+            # Check if any urls were parsed
+            if len(self.urlDict.keys()) > 0:
+                # If they were, pass parsed urls to the pageNode's urlList
+                page.urlList = self.urlDict.keys()        
         
         # If a keyword exists, look for the keyword in text. Returns True if found
         if self.keywordExists:
@@ -74,18 +96,6 @@ class WebCrawler:
                 return 0
         else:  
             return 0
-        
-    def titleCrawl(self,page):
-        fetched = self._fetch(page.nodeUrl)
-        loadedUrl = fetched[1]
-        theSoup = fetched[0]
-
-        if type(theSoup) == str:
-            page.setTitle(theSoup)
-            page.setCrawledStatus(True)
-            return 2
-
-        page.setTitle(self.parser.getPageTitle(theSoup))
 
     # fetch the web page and pull all href elements / build urls
     # returns tuple of (bs4 object, url loaded). url loaded is returned to ensure we use the possibly redirected url
@@ -94,18 +104,19 @@ class WebCrawler:
         # flesh out
         url = urlString
         followed = None
+        
         try:
-            html = urllib2.urlopen(url)
-            followed = html.geturl()
-            html = html.read()
+            response = requests.get(url, timeout=3)
+            if response.status_code == requests.codes.ok:
+                html = response.content
+                followed = response.url             
+            else:
+                response.raise_for_status()
         except:
-            e = sys.exc_info()[1]
-            print "EXCEPTION:"
-            print str(e)
-            print "\n"
-            #print("Error " + str(e.code) + ": " + str(e.reason))
-            #return("Error " + str(e.code) + ": " + str(e.reason))
-            return (str(e),followed)
+            e = sys.exc_info()
+            sys.stderr.write("Error " + str(e[0]) + ": " + str(e[1]))
+
+            return("Error: " + str(e[1]), followed)
         return (bs(html,'lxml'),followed)
 
         
