@@ -45,13 +45,6 @@ class WebParser:
         # url info separated
         urlInfo = urlparse(url)
 
-        # base of our url
-
-        if len(urlInfo.scheme) <= 0:
-            print "da hek?"
-            print urlInfo
-            print url
-
         baseUrl = urlInfo.scheme + '://' + urlInfo.netloc
         baseWithPath = baseUrl + urlInfo.path
         # Obtain full url for each link

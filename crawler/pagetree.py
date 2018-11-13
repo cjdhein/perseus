@@ -144,13 +144,15 @@ class PageTree:
 
         # Set as activeNode to ensure first loop runs
         self.activeNode = self.rootNode
-
+        
         # Loop while the limit has not been hit, the queue is not empty, and we have not hit the keyword
         while len(currentQ) >= 1 and not self.activeNode.getKeywordStatus():
-
+            
             # Take node from the front of the queue and make it the active node
             self.activeNode = currentQ.popleft()
             aNode = self.activeNode
+            tmpList = aNode.urlList
+            aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
 
             # If the node was not crawled, crawl it
             if not self.crawled.has_key(aNode.nodeUrl):
@@ -184,37 +186,36 @@ class PageTree:
                     else:
                         self.activeNode = aNode.parentNode 
                     continue
-                else:
-                    if DEBUG:
-                        print "Was: " + str(len(aNode.urlList))
-                    tmpList = aNode.urlList
-                    aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
-                    if DEBUG:
-                        print "Is: " + str(len(aNode.urlList))
-                        print ""
+                # else:
+                #     if DEBUG:
+                #         print "Was: " + str(len(aNode.urlList))
+                #     tmpList = aNode.urlList
+                #     aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
+                #     if DEBUG:
+                #         print "Is: " + str(len(aNode.urlList))
+                #         print "" 
             else:
-                aNode.setTitle(self.crawled[aNode.nodeUrl].getTitle())
+                continue
+                #print "Here!!!"
+                #aNode.setTitle(self.crawled[aNode.nodeUrl].getTitle())
 
             # Loop while there are still URLs to visit
             while (len(aNode.urlList)) >= 1 and self.currentLevel <= self.limit:
 
                 # get new url
                 newUrl = aNode.urlList.pop()
-
-                # get next unique ID
-                newId = self.getUID()
                 
-                # create a new node
-                newNode = PageNode(aNode,newId,newUrl,self.currentLevel)
-                
-                # Add the new node to the current node's dict, with a 0 to indicate it has not been visited                    
-                aNode.nodeDict[newNode] = 0
-
                 if self.crawled.has_key(newUrl):
-                    if DEBUG:
-                        print "Already crawled " + newUrl + " uid: " + str(self.crawled[newUrl].getUid())
-                    newNode.setTitle(self.crawled[newUrl].getTitle())
+                    continue
                 else:
+                    # get next unique ID
+                    newId = self.getUID()
+                    
+                    # create a new node
+                    newNode = PageNode(aNode,newId,newUrl,self.currentLevel)
+                    
+                    # Add the new node to the current node's dict, with a 0 to indicate it has not been visited                    
+                    aNode.nodeDict[newNode] = 0
                     nextQ.append(newNode)
                 
 

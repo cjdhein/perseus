@@ -52,8 +52,10 @@ class WebCrawler:
             if page.nodeUrl[:2] == '//':
                 # If it is, prepend http: and proceed
                 page.nodeUrl = 'http:' + page.nodeUrl
+            elif page.nodeUrl[:3] == '://':
+                page.nodeUrl = 'http' + page.nodeUrl
             else:
-                # Otherwise, prepend with // and proceed
+                # Otherwise, prepend and proceed
                 page.nodeUrl = 'http://' + page.nodeUrl
         elif parsedUrl.scheme != 'http' and parsedUrl.scheme != 'https':
             page.setTitle("Invalid scheme detected. Please use http or https.")
@@ -73,8 +75,21 @@ class WebCrawler:
         
         # if DEBUG:
         #     print self.parser.getPageTitle(theSoup)
-        page.setTitle(self.parser.getPageTitle(theSoup))
-        page.setCrawledStatus(True)
+        try:
+            page.setTitle(self.parser.getPageTitle(theSoup))
+            page.setCrawledStatus(True)
+        except AttributeError:
+            e = sys.exc_info()
+            page.setError("theSoup is of type " + str(type(theSoup)) + " but should be bs4 object.")
+            sys.stderr.write(str(e[0]) + " " + str(e[1]))
+            sys.stderr.write("\ntheSoup is of type " + str(type(theSoup)) + " but should be bs4 object.\n")
+            return 2
+        except:
+            e = sys.exc_info()
+            sys.stderr.write(str(e[0]) + " " + str(e[1]))
+            page.setError("Something went wrong here...")
+            sys.stderr.write("\nSomething went wrong here...\n")
+            return 2
         
         if crawlType == 0:
             # Parse the URLs from gathered soup
@@ -112,6 +127,8 @@ class WebCrawler:
                 followed = response.url             
             else:
                 response.raise_for_status()
+        except KeyboardInterrupt:
+            sys.exit()
         except:
             e = sys.exc_info()
             sys.stderr.write("Error " + str(e[0]) + ": " + str(e[1]))
