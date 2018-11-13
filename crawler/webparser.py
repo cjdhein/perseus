@@ -25,6 +25,7 @@ class WebParser:
     def linkFindHelper(self,tag):
         valid = (tag.name == u'a' and tag.has_attr('href'))
         if valid:
+            pdb.set_trace()
             href = tag['href']
             pattern = "(\.(?=(htm|asp|shtm|php|do))\w{2,5}$|\/\w*?$)"
             status = re.search(pattern,href)
@@ -40,7 +41,7 @@ class WebParser:
         uniqueLinks = {}
 
         # all 'a' elements with href
-        aTags = soup.find_all(self.linkFindHelper)
+        aTags = soup.find_all('a', href=True)
 
         # url info separated
         urlInfo = urlparse(url)
