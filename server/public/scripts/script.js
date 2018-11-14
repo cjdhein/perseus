@@ -1,3 +1,5 @@
+const keywordColor = "#ff7070";
+const defaultColor = "#D2E5FF";
 
 var crawlerApp = angular.module('crawlerApp', ['ngRoute', 'ngCookies']);
 
@@ -6,8 +8,8 @@ crawlerApp.config(function($routeProvider) {
 
 	// route for the home page
 	.when('/', {
-		templateUrl : './../html/home.html',
-		controller  : 'homeController'
+		templateUrl : './../html/history.html',
+		controller  : 'historyController'
 	})
 
 	// route for the graph page
@@ -17,10 +19,10 @@ crawlerApp.config(function($routeProvider) {
 	})
 
 	// route for the history page
-	.when('/history', {
-		templateUrl : './../html/history.html',
-		controller  : 'historyController'
-	});
+	// .when('/history', {
+	// 	templateUrl : './../html/history.html',
+	// 	controller  : 'historyController'
+	// });
 });
 
 crawlerApp.factory('graphData', function() {
@@ -58,9 +60,10 @@ crawlerApp.factory('graphData', function() {
 	};
 });
 
-// create the controller and inject Angular's $scope
-crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
-	$scope.data = {};
+crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $location, graphData, $route){
+	$scope.data = {
+		search: "dfs"
+	};
 
 	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
 	var cookie = $cookieStore.get('graphCrawlerHistory');
@@ -74,23 +77,24 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 
 	//TODO: Send request to server to retrieve graph from search terms
 	$scope.submit = function(){
-		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit) {
+		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit || !Number.isInteger($scope.data.limit)) {
 			return;
 		}
 
 		var url = "/post";
 
-		console.log($scope.data);
 		$http.post(url, $scope.data)
 			.success(function(response, status){
 				graphData.reset();
 				saveData(response);
 				addCookie($scope.data);
 
-				console.log($cookieStore.get('graphCrawlerHistoryData'));
-				console.log($cookieStore.get('graphCrawlerHistory'));
+				$scope.data = {
+					search: "dfs"
+				};
 
 				$location.path('/graph');
+				$route.reload();
 			}).
 			error(function(data, status){
 				//error message
@@ -103,17 +107,44 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 		var xml = parser.parseFromString(text, 'application/xml');
 		var pages = xml.getElementsByTagName('page');
 
+		var idToLevel = {
+			0: 1
+		};
+
 		for(var i = 0; i < pages.length; ++i) {
 			var nodes = pages[i].children;
 			var newNode = {
 				keyword: false
 			};
+
+			if(i == 0) {
+				newNode["level"] = 1;
+			}
+
 			for(var j = 0; j < nodes.length; ++j) {
 				if(nodes[j].nodeName == 'parent_id') {
 					graphData.addEdge(i, nodes[j].innerHTML);
+					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 3;
+					newNode["level"] = idToLevel[i]; 
 				}
 				else if(nodes[j].nodeName == 'keyword') {
 					newNode['keyword'] = true;
+					newNode['color'] = {
+						background: keywordColor,
+						border: "#c60d0d",
+						highlight: {
+							background: keywordColor,
+							border: "#c60d0d"
+						},
+						hover: {
+							border: "#c60d0d",
+							background: "#ffaaaa"
+						}
+					};
+				}
+				else if(nodes[j].nodeName == 'title') {
+					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
+					newNode['label'] = nodes[j].innerHTML;
 				}
 				else {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
@@ -141,7 +172,33 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 	};
 
 	$scope.history = function(){
-		$location.path('/history');
+		$location.path('/');
+	};
+});
+
+// create the controller and inject Angular's $scope
+crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $location, graphData) {
+	var historyArr = [];
+	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
+	var start = cookieData['start'];
+	var size = cookieData['size'];
+	var cookie = $cookieStore.get('graphCrawlerHistory');
+
+	for(var i = 0; i < size; ++i) {
+		historyArr.push(cookie[(start+i)%10]);
+	}
+
+	$scope.hist = historyArr.reverse();
+
+	$scope.view = function(id){
+		console.log(id);
+		//Send request to server
+		//update graph
+		//$location.path('/graph');
+	};
+
+	$scope.history = function(){
+		$location.path('/');
 	};
 
 });
@@ -165,15 +222,19 @@ crawlerApp.controller('graphController', function($scope, graphData) {
     	edges: {
         	labelHighlightBold: false,
         	selectionWidth: 0,
+        	chosen: false,
     	},
     	layout: {
         	hierarchical: {
             	enabled: true,
             	direction: "LR",
+            	//sortMethod: "directed"
         	}
     	},
     	interaction: {
         	dragNodes: false,
+        	hover: true,
+        	hoverConnectedEdges: false,
        		navigationButtons: true,
     	},
     	physics: {
@@ -186,7 +247,8 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 
 	//Handle node on-click
 	network.on('click', function(properties) {
-		document.getElementById("popup").style.display = "none";
+		document.getElementById("popupDefault").style.display = "none";
+		document.getElementById("popupKeyword").style.display = "none";
 
 		var nodeID = properties.nodes[0];
 		console.log("nodeID: " + nodeID);
@@ -198,101 +260,41 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 			}, 1000);
 
 			setTimeout(function(){
-				document.getElementById("popup").style.display = "block";
-				document.getElementById("pTitle").innerHTML = graph.nodes[nodeID]['title'];
-				document.getElementById("pInfo").innerHTML = graph.nodes[nodeID]['info'];
-				document.getElementById("pLink").href = graph.nodes[nodeID]['url'];
+				if(graph.nodes[nodeID]['keyword']) {
+					document.getElementById("popupDefault").style.display = "none";
+					document.getElementById("kTitle").innerHTML = graph.nodes[nodeID]['title'];
+					document.getElementById("kKeyword").innerHTML = "Contains keyword";
+					document.getElementById("kLink").href = graph.nodes[nodeID]['url'];
+					document.getElementById("popupKeyword").style.display = "block";
+				}
+				else {
+					document.getElementById("popupKeyword").style.display = "none";
+					document.getElementById("dTitle").innerHTML = graph.nodes[nodeID]['title'];
+					document.getElementById("dKeyword").innerHTML = "Doesn't contain keyword";
+					document.getElementById("dLink").href = graph.nodes[nodeID]['url'];
+					document.getElementById("popupDefault").style.display = "block";
+				}
 			}, 1000);
 		}
 		else {
-			document.getElementById('popup').style.display = "none";
+			document.getElementById('popupKeyword').style.display = "none";
+			document.getElementById('popupDefault').style.display = "none";
 		}
 
 	});
 
 	network.on('zoom', function(properties){
-		document.getElementById('popup').style.display = "none";
+		document.getElementById('popupKeyword').style.display = "none";
+		document.getElementById('popupDefault').style.display = "none";
 	});
 
 	network.on('dragStart', function(properties){
-		document.getElementById('popup').style.display = "none";
+		document.getElementById('popupKeyword').style.display = "none";
+		document.getElementById('popupDefault').style.display = "none";
 	});
 });
 
 crawlerApp.controller('historyController', function($scope, $cookieStore, $location) {
-	//TODO: Update scope with history cookie
-	// $scope.hist = [{
-	// 	id: 1,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 1,
-	// 	keyword: ""
-	// },
-	// {
-	// 	id: 2,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 2,
-	// 	keyword: "asdf"
-	// },
-	// {
-	// 	id: 3,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 3,
-	// 	keyword: "a"
-	// },
-	// {
-	// 	id: 4,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 4,
-	// 	keyword: "b"
-	// },
-	// {
-	// 	id: 5,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 5,
-	// 	keyword: "c"
-	// },
-	// {
-	// 	id: 1,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 1,
-	// 	keyword: ""
-	// },
-	// {
-	// 	id: 2,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 2,
-	// 	keyword: "asdf"
-	// },
-	// {
-	// 	id: 3,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 3,
-	// 	keyword: "a"
-	// },
-	// {
-	// 	id: 4,
-	// 	start: "www.google.com",
-	// 	search: "bfs",
-	// 	limit: 4,
-	// 	keyword: "b"
-	// },
-	// {
-	// 	id: 5,
-	// 	start: "www.google.com",
-	// 	search: "dfs",
-	// 	limit: 5,
-	// 	keyword: "c"
-	// },
-	// ];
-
 	var historyArr = [];
 	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
 	var start = cookieData['start'];
