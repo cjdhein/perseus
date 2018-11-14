@@ -6,7 +6,6 @@
 		<id>0</id>
 		<title>Google</title>
 		<url>https://www.google.com/</url>
-		<keyword />
 	</page>
 
 	<page>
@@ -112,7 +111,6 @@
 		<title>Google</title>
 		<url>https://www.google.com/</url>
 		<parent_id>0</parent_id>
-		<keyword />
 	</page>
 
 	<page>
@@ -155,7 +153,6 @@
 		<title>Google</title>
 		<url>https://www.google.com/</url>
 		<parent_id>0</parent_id>
-		<keyword />
 	</page>
 
 	<page>
@@ -233,7 +230,6 @@
 		<title>Google</title>
 		<url>https://www.google.com/</url>
 		<parent_id>7</parent_id>
-		<keyword />
 	</page>
 
 	<page>

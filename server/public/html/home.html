@@ -1,7 +1,6 @@
-<div class="content">
 <h1 class="display-1 centered">Graphical Web Crawler</h1>
 
-	<form name="subForm">
+	<form>
 
 	<div class="row">
 	<div class="col-md-3"></div>
@@ -15,8 +14,8 @@
 	<div class="col-md-3"></div>
   	<div class="form-group col-md-6">
     	<label for="search">Search method:</label>
-    	<select class="form-control" ng-model="data.search">
-      		<option value="dfs" selected>Depth-First Search</option>
+    	<select class="form-control" ng-model="data.search" required>
+      		<option value="dfs">Depth-First Search</option>
       		<option value="bfs">Breadth-First Search</option>
     	</select>
   	</div>
@@ -26,7 +25,7 @@
 	<div class="col-md-3"></div>
   	<div class="form-group col-md-6">
     	<label for="limit">Numeric limit:</label>
-    	<input type="number" class="form-control" ng-model="data.limit" min="1" step="1" required>
+    	<input type="number" class="form-control" ng-model="data.limit" required min="1">
   	</div>
   	</div>
 
@@ -47,4 +46,3 @@
 	<div class="footer centered">
 	<a href="" ng-click="history()"><h5>View Previous Searches</h5></a>
 	</div>
-</div>
