@@ -9,7 +9,8 @@ from lxml import etree
 DEBUG = False
 
 # hold directory path for the log directory
-LOGDIRECTORY = "../server/public/log_files/"
+#LOGDIRECTORY = "../server/public/log_files/"
+LOGDIRECTORY = "./"
 class PageTree:
 
     def __init__ (self,outfile, startUrl, limit, searchType, keyword):
@@ -61,14 +62,17 @@ class PageTree:
         self.activeNode = self.rootNode
         
         # Loop while we have not hit the limit and the keyword status is false
-        while self.currentLevel <= self.limit:
+        while self.currentLevel <= self.limit+1:
             aNode = self.activeNode
             
             # if the active node has not been crawled
             if not self.crawled.has_key(aNode.nodeUrl):
 
                 # trigger the crawl and store return status in retStat. 0 for full crawl.
-                retStat = wc.crawl(aNode, 0)
+                if self.currentLevel <= self.limit:
+                    retStat = wc.crawl(aNode, 0)
+                else:
+                    retStat = wc.crawl(aNode, 1)
 
                 # Add the URL to the crawled dictionary
                 self.crawled[aNode.nodeUrl] = aNode.urlList
@@ -84,14 +88,20 @@ class PageTree:
 
                 # Error occurred
                 elif retStat == 2:
+                    pdb.set_trace()
                     # if this is the root node, we return the error code and exit
                     if self.activeNode == self.rootNode:
                         return 2                    
                     # If not, we back set the active node to the parent node
                     else:
+                        del aNode.parentNode.nodeDict[aNode]
+                        aNode.parentNode.nodeDict
                         self.activeNode = aNode.parentNode 
                     continue                    
 
+            if aNode.getLevel() == self.limit:
+                self.currentLevel += 1
+                continue
              
             # Execution here means the node has been crawled
             # get length of urlList
@@ -116,6 +126,7 @@ class PageTree:
                 # Set a new active node, and go down a level
                 self.currentLevel += 1
                 self.activeNode = newNode
+
 
             # No URLs available
             else:
@@ -260,7 +271,7 @@ class PageTree:
                 lvl.text = str(node.getLevel())
 
                 url = etree.SubElement(page,"url")
-                url.text = str(node.getUrl())
+                url.text = node.getUrl()
 
                 title = etree.SubElement(page,"title")
                 title.text = str(node.getTitle())

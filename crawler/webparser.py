@@ -20,7 +20,12 @@ class WebParser:
 
 
     def getPageTitle(self,soup):
-        return soup.find('title').string
+        title = soup.title.text
+        try:
+            title = unicode(title)
+        except:
+            title = "No title found"
+        return title
 
     def linkFindHelper(self,tag):
         valid = (tag.name == u'a' and tag.has_attr('href'))

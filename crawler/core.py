@@ -36,6 +36,5 @@ else:
 
 # Create new PageTree with above variables
 testTree = PageTree(outfile, startUrl, limit, search, keyword)
-
 # Begin the crawl
 testTree.beginCrawl()

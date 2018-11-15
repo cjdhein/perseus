@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup as bs
+from requests_html import HTMLSession
 from urlparse import urlparse
 import requests
 import sys
@@ -62,13 +63,14 @@ class WebCrawler:
             page.setError(parsedUrl.scheme + " is not a valid scheme. Please use http or https.")
             return 2
         
-        fetched = self._fetch(page.nodeUrl)
+        fetched = self._fetchAndParse(page.nodeUrl)
         loadedUrl = fetched[1]
         theSoup = fetched[0]
         
+
         # if we got a string back, there was an error fetching
         # return code 2 (error)
-        if type(theSoup) == str:
+        if type(theSoup) == unicode:
             page.setTitle("Invalid, broken, or otherwise unreachable URL")
             page.setError(theSoup)
             return 2
@@ -76,13 +78,16 @@ class WebCrawler:
         # if DEBUG:
         #     print self.parser.getPageTitle(theSoup)
         try:
-            page.setTitle(self.parser.getPageTitle(theSoup))
+            title = self.parser.getPageTitle(theSoup)
+            asciiTitle = title.encode('ascii','ignore')
+            page.setTitle(asciiTitle)
             page.setCrawledStatus(True)
         except AttributeError:
             e = sys.exc_info()
             page.setError("theSoup is of type " + str(type(theSoup)) + " but should be bs4 object.")
-            sys.stderr.write(str(e[0]) + " " + str(e[1]))
-            sys.stderr.write("\ntheSoup is of type " + str(type(theSoup)) + " but should be bs4 object.\n")
+
+            sys.stderr.write("\n*****\n" + str(e[0]) + " " + str(e[1]) + "\n")
+            sys.stderr.write("\ntheSoup is of type " + str(type(theSoup)) + " but should be bs4 object.\n*****\n")
             return 2
         except:
             e = sys.exc_info()
@@ -111,6 +116,16 @@ class WebCrawler:
                 return 0
         else:  
             return 0
+    def _fetchAndParse(self,urlString):
+        try:
+            pdb.set_trace()
+            session = HTMLSession()
+            response = session.get(urlString)
+            title = response.html.find('title').text
+            urls = response.html.absoluteLinks
+        except:
+            e = sys.exc_info()
+            print e[1]
 
     # fetch the web page and pull all href elements / build urls
     # returns tuple of (bs4 object, url loaded). url loaded is returned to ensure we use the possibly redirected url
@@ -123,12 +138,19 @@ class WebCrawler:
         try:
             response = requests.get(url, timeout=3)
             if response.status_code == requests.codes.ok:
-                html = response.content
+                pdb.set_trace()
+                html = response.text
                 followed = response.url             
             else:
+                html = None
                 response.raise_for_status()
         except KeyboardInterrupt:
+            sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
             sys.exit()
+        except (requests.HTTPError, requests.ConnectionError):
+            e = sys.exc_info()
+            eText = unicode(e[1])
+            return("Error: " + eText, followed)
         except:
             e = sys.exc_info()
             sys.stderr.write("Error " + str(e[0]) + ": " + str(e[1]))
