@@ -1,17 +1,17 @@
-from urllib.parse import urlparse
-import re
+import sys
+import requests_html
 import pdb
 
 
 class WebParser:
 
-    def parseKeyword(self, soup, keyword):
+    def parseKeyword(self, html, keyword):
 
         # convert keyword to lowercase unicode for searching
-        ukey = unicode(keyword).lower()
+        ukey = str(keyword).lower()
 
         # obtain full text contents of the page (as unicode) and make it lowercase
-        fullText = soup.get_text().lower()
+        fullText = html.get_text().lower()
         
         if fullText.count(ukey) > 0:
             return True
@@ -19,76 +19,34 @@ class WebParser:
             return False
 
 
-    def getPageTitle(self,soup):
-        title = soup.title.text
+    def getPageTitle(self,html):
         try:
-            title = unicode(title)
+            # Returns a list of all matching elements
+            title = html.find('title')
+
+            # Title will have zero length if no matching tag is found
+            if len(title) < 1:
+                title = "Page had no title"
+            else:
+                title = title[0].text
         except:
-            title = "No title found"
+            e = sys.exc_info()
+            sys.stderr.write(str(e[1]))
+            exit(1)
         return title
 
-    def linkFindHelper(self,tag):
-        valid = (tag.name == u'a' and tag.has_attr('href'))
-        if valid:
-            pdb.set_trace()
-            href = tag['href']
-            pattern = "(\.(?=(htm|asp|shtm|php|do))\w{2,5}$|\/\w*?$)"
-            status = re.search(pattern,href)
-
-        return True if valid and status else False
-
     # parseUrls
-    # Desc:     parses provided BeautifulSoup object for all links and constructs full urls out of them
-    # Args:     soup - a beautiful soup 4 object with html; url - the url the soup belongs to
-    # Returns:  dict with each unique, full url, link found in the html
-    def parseUrls(self,soup,url):
+    # Desc:     parses provided Requests-http object for all links in absolute form
+    # Args:     html - a Requests-HTTP representation of the HTML content fetched from the url
+    # Returns:  a set containing each unique absolute link found in the html
+    def parseUrls(self,html):
 
         uniqueLinks = {}
 
-        # all 'a' elements with href
-        aTags = soup.find_all('a', href=True)
-
-        # url info separated
-        urlInfo = urlparse(url)
-
-        baseUrl = urlInfo.scheme + '://' + urlInfo.netloc
-        baseWithPath = baseUrl + urlInfo.path
-        # Obtain full url for each link
-        for aTag in aTags:
-            urlToAdd = ''
-
-            # confirm the link actually leads somewhere, if it doesn't skip it
-            if len(aTag['href']) <= 0:
-                continue
-                print "\n\n\nBLANK LINK\n\n\n"
-
-            # if base url is not in the href attribute, we need to build out the full url, provided it does not link to another domain / netloc
-            if baseUrl not in aTag['href']:
-        
-                # check if there is another domain/netloc
-                hrefNetloc = urlparse(aTag['href']).netloc
-                if len(hrefNetloc) > 0:
-                    temp = urlparse(aTag['href'])
-                    urlToAdd = temp.scheme + "://" + temp.netloc + temp.path # another domain is included, so add as is
-                else:
-                    if aTag['href'][0] == '/':
-                        urlToAdd = baseUrl + aTag['href']
-                    else:
-                        continue
-#                    urlToAdd = baseUrl + aTag['href'] # no other domain is included, so prepend the page url
-            # base url is in href, so we can add as is
-            else:
-                urlToAdd = aTag['href']
-
-            # add urlToAdd to urlDict if it doesn't already exist
-#            splitUrl = urlparse(urlToAdd)
- #           urlToAdd = splitUrl.scheme + '://' + splitUrl.netloc + splitUrl.path
-  #          uniqueLinks[urlToAdd] = 1
-            
-            #strip off trailing / to help ensure no duplication
-            if urlToAdd[len(urlToAdd)-1] == '/':
-                urlToAdd = urlToAdd[:len(urlToAdd)-1]
-            if urlToAdd != '':
-                uniqueLinks[urlToAdd] = 1
-
-        return uniqueLinks
+        try:
+            all_links = html.absolute_links
+            return all_links
+        except:
+            e = sys.exc_info()
+            sys.stderr.write(e[1])
+            sys.exit(1)

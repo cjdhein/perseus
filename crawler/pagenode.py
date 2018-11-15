@@ -96,7 +96,7 @@ class PageNode:
 
     # Returns boolean indicating if the node has unvisited children
     def hasUnvisited(self):
-        vals = self.nodeDict.values()
+        vals = list(self.nodeDict.values())
         if vals.count(0) >= 1:
             return True
         else:

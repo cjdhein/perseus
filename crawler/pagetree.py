@@ -66,7 +66,7 @@ class PageTree:
             aNode = self.activeNode
             
             # if the active node has not been crawled
-            if nNode.nodeUrl not in self.crawled:
+            if aNode.nodeUrl not in self.crawled:
 
                 # trigger the crawl and store return status in retStat. 0 for full crawl.
                 if self.currentLevel <= self.limit:
@@ -88,7 +88,6 @@ class PageTree:
 
                 # Error occurred
                 elif retStat == 2:
-                    pdb.set_trace()
                     # if this is the root node, we return the error code and exit
                     if self.activeNode == self.rootNode:
                         return 2                    
@@ -166,7 +165,7 @@ class PageTree:
             aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
 
             # If the node was not crawled, crawl it
-            if not self.crawled.has_key(aNode.nodeUrl):
+            if aNode.nodeUrl not in self.crawled:
                 
                 # Branch depending on whether the current level is the limit. If it is not the limit, we proceed with a full crawl, gather all URLs from the node.
                 # If the limit has been reached, we can do a fast crawl to just get the title and check for the keyword.
@@ -216,7 +215,7 @@ class PageTree:
                 # get new url
                 newUrl = aNode.urlList.pop()
                 
-                if self.crawled.has_key(newUrl):
+                if newUrl in self.crawled:
                     continue
                 else:
                     # get next unique ID
@@ -293,7 +292,7 @@ class PageTree:
                     if child.visited == False:
                         q.append(child)
 
-        xmlOut = open(LOGDIRECTORY + self.outfile,"w")
+        xmlOut = open(LOGDIRECTORY + self.outfile,"wb")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()
 
@@ -307,6 +306,6 @@ class PageTree:
         errorText = etree.SubElement(errorNode,"text")
         errorText.text = self.rootNode.getError()
 
-        xmlOut = open(LOGDIRECTORY + self.outfile,"w")
+        xmlOut = open(LOGDIRECTORY + self.outfile,"wb")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()            

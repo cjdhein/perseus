@@ -1,16 +1,13 @@
 [[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
 
 [dev-packages]
 
 [packages]
-pyvirtualdisplay = "*"
-"beautifulsoup4" = "*"
-lxml = "*"
 requests = "*"
-request-html = "*"
+requests-html = "*"
 
 [requires]
-python_version = "3.6.6"
+python_version = "3.6"
