@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup as bs
 from requests_html import HTMLSession
-from urlparse import urlparse
+from urllib.parse import urlparse
 import requests
 import sys
 from webparser import WebParser
@@ -125,7 +125,8 @@ class WebCrawler:
             urls = response.html.absoluteLinks
         except:
             e = sys.exc_info()
-            print e[1]
+            print(e[1])
+
 
     # fetch the web page and pull all href elements / build urls
     # returns tuple of (bs4 object, url loaded). url loaded is returned to ensure we use the possibly redirected url

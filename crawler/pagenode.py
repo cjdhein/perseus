@@ -1,4 +1,3 @@
-import unicodedata
 from types import *
 import pdb
 
@@ -47,11 +46,8 @@ class PageNode:
         self.crawled = status
 
     def setTitle(self, title):
-        # if the title is in unicode, we have to scrub it and convert to ascii
         titleString = ''
-        title = unicode(title)
-        scrubbed = unicodedata.normalize('NFKD', title).encode('ascii','ignore')
-        titleString = scrubbed
+        titleString = str(title)
         self.nodeTitle = titleString
 
     def getTitle(self):
@@ -77,7 +73,7 @@ class PageNode:
 
     def printUrls(self):
         for elem in self.urlList:
-            print elem
+            print(elem)
 
     def visitNode(self):
         self.visited = True
@@ -86,8 +82,8 @@ class PageNode:
     # Returns the first unvisited child node
     # NOTE: Must follow a call to hasUnvisited() to ensure there are unvisited children
     def getUnvisited(self):
-        vals = self.nodeDict.values()
-        keys = self.nodeDict.keys()
+        vals = list(self.nodeDict.values())
+        keys = list(self.nodeDict.keys())
         index =  -1
         
         key = None

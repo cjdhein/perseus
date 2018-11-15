@@ -56,7 +56,7 @@ class PageTree:
 
     def crawlDFS(self):
         if DEBUG:
-            print "Search DFS"
+            print("Search DFS")
 
         wc = self.webCrawler
         self.activeNode = self.rootNode
@@ -66,7 +66,7 @@ class PageTree:
             aNode = self.activeNode
             
             # if the active node has not been crawled
-            if not self.crawled.has_key(aNode.nodeUrl):
+            if nNode.nodeUrl not in self.crawled:
 
                 # trigger the crawl and store return status in retStat. 0 for full crawl.
                 if self.currentLevel <= self.limit:
@@ -138,7 +138,7 @@ class PageTree:
 
     def crawlBFS(self):
         if DEBUG:
-            print "Search BFS"
+            print("Search BFS")
 
         wc = self.webCrawler
         
