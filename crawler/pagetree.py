@@ -126,13 +126,13 @@ class PageTree:
                 self.currentLevel += 1
                 self.activeNode = newNode
 
-
             # No URLs available
             else:
                 # Set aNode to the parent node in order to grab a new URL from there
                 if aNode.parentNode is None:
-                    self.currentLevel = self.limit + 1
-                self.activeNode = aNode.parentNode 
+                    break
+                else:
+                    self.activeNode = aNode.parentNode 
 
 
     def crawlBFS(self):

@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup as bs
 from requests_html import HTMLSession
 import requests
+import grequests
+from requests import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import sys
 from webparser import WebParser
 from pagenode import PageNode
@@ -33,6 +36,7 @@ class WebCrawler:
             return returnString
         else:
             return "urlDict is empty"
+
 
     # crawlTypes:
     #   0: full crawl (urls, title, keyword)
@@ -104,7 +108,7 @@ class WebCrawler:
         while(retry):
             try:
                 session = HTMLSession()
-                response = session.get(urlString)
+                response = session.get(urlString, timeout=3, stream=False, verify=False)
                 followed = response.url
 
                 if response.status_code == requests.codes.ok:
