@@ -1,29 +1,33 @@
-from bs4 import BeautifulSoup as bs
-from urlparse import urlparse
-import urllib2
+from requests_html import HTMLSession
+from requests_html import AsyncHTMLSession
+import requests
+import pdb
 import sys
-from pagenode import PageNode
+import asyncio
 
-testNode = PageNode(None, 1, "www.google.com","Google",False)
-testNode2 = PageNode(testNode, 2, "www.bing.com","Bing",False)
 
-print testNode
-print "--------------------"
-print testNode2
-#url = "https://www.gutenberg.org/files/11/11-h/11-h.htm"
-#keyword = str(sys.argv[1])
-#print "Searching Alice in Wonderland for the word " + keyword
-#html = urllib2.urlopen(url).read()
-#
-#soup = bs(html,'lxml')
-#
-#theText = soup.get_text().lower()
-#
-#uniSearch = unicode(keyword)
-#
-#found = theText.count(uniSearch.lower())
-#
-#if found >= 1:
-#    print "Found '" + keyword + "' in the text!"
-#else:
-#    print keyword + " was not found in the text."
+session = HTMLSession()
+
+
+urls = ['http://www.google.com', 'www.python.org', 'www.wikipedia.org']
+
+async def reqUrl(url):
+    try:
+        response = session.get(url)
+        return response
+    except requests.exceptions.MissingSchema:
+        url = 'http://' + url
+        return await reqUrl(url)
+    except:
+        e = sys.exc_info()
+        return str(e[1])
+
+
+pool = asyncio.gather(*[reqUrl(url) for url in urls])
+loop = asyncio.get_event_loop()
+
+results = loop.run_until_complete(pool)
+pdb.set_trace()
+loop.close()
+
+print("done")
