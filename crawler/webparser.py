@@ -21,6 +21,9 @@ class WebParser:
 
     def getPageTitle(self,html):
         try:
+
+            if type(html) == str:
+                return html
             # Returns a list of all matching elements
             title = html.find('title')
 

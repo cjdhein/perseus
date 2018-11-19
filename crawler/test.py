@@ -4,30 +4,22 @@ import requests
 import pdb
 import sys
 import asyncio
+from pagenode import PageNode
+from pagetree import PageTree
+import time
+url ="http://www.sidekick-dogtraining.com"
+tree1 = PageTree('tree1.xml',url,2,9,None)
+tree2 = PageTree('tree1.xml',url,2,2,None)
+
+poolStart = time.time()
+tree1.beginCrawl()
+poolStop = time.time()
+
+print("Async runtime = %s seconds" % (poolStop - poolStart))
+
+singleStart = time.time()
+tree2.beginCrawl()
+singleStop = time.time()
 
 
-session = HTMLSession()
-
-
-urls = ['http://www.google.com', 'www.python.org', 'www.wikipedia.org']
-
-async def reqUrl(url):
-    try:
-        response = session.get(url)
-        return response
-    except requests.exceptions.MissingSchema:
-        url = 'http://' + url
-        return await reqUrl(url)
-    except:
-        e = sys.exc_info()
-        return str(e[1])
-
-
-pool = asyncio.gather(*[reqUrl(url) for url in urls])
-loop = asyncio.get_event_loop()
-
-results = loop.run_until_complete(pool)
-pdb.set_trace()
-loop.close()
-
-print("done")
+print("Normal runtime = %s seconds" % (singleStop - singleStart))

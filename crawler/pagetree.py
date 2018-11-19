@@ -45,14 +45,18 @@ class PageTree:
             # At least one successfully read node, so write normal log file
             else:
                 self.writeLogFile()            
-        else:
+        elif self.searchType == 2:
             returnStatus = self.crawlBFS()
             # Error on root node. Write an error log file
-            if returnStatus == 2:
-                self.writeErrorLog()
+            #if returnStatus == 2:
+                #self.writeErrorLog()
             # At least one successfully read node, so write normal log file
-            else:
-                self.writeLogFile()            
+            #else:
+                #self.writeLogFile()
+        else:
+            returnStatus = self.poolBFS()
+            #if returnStatus == 0:
+                #self.writeLogFile()
 
     def crawlDFS(self):
         if DEBUG:
@@ -134,6 +138,57 @@ class PageTree:
                 else:
                     self.activeNode = aNode.parentNode 
 
+    def buildNodes(self,parentNode,nextCrawl):
+        urls = parentNode.urlList
+
+        for url in urls:
+            newNode = PageNode(parentNode,self.getUID(),url,self.currentLevel)
+            parentNode.nodeDict[newNode] = 0
+            if self.currentLevel-1 < self.limit:
+                if newNode.nodeUrl not in self.crawled.keys():
+                    nextCrawl.append(newNode)
+
+    def poolBFS(self):
+        wc = self.webCrawler
+        thisCrawl = list()
+        thisCrawl.append(self.rootNode)
+        
+        nextCrawl = list()
+
+        while self.currentLevel <= self.limit:
+
+            # crawlType:    0 = urls, keyword, title
+            #               1 = urls, title
+            #               2 = title            
+            if self.keywordExists:
+                wc.crawlPool(thisCrawl,0)
+            else:
+                wc.crawlPool(thisCrawl,1)
+            
+            
+
+            while len(thisCrawl) > 0:
+                node = thisCrawl.pop()
+                self.crawled[node.nodeUrl] = node
+                self.buildNodes(node,nextCrawl)
+
+
+            self.currentLevel += 1
+
+            # ensure thisCrawl is clear
+            # point thisCrawl at nextCrawl
+            # make nextCrawl a new list
+            thisCrawl.clear()
+            thisCrawl = nextCrawl
+            nextCrawl = list()
+        
+        # crawl for titles on last layer
+        wc.crawlPool(thisCrawl, 2)
+        return 0
+
+        
+
+        
 
     def crawlBFS(self):
         if DEBUG:

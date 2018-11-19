@@ -1,10 +1,11 @@
+import sys
+import asyncio
 from bs4 import BeautifulSoup as bs
 from requests_html import HTMLSession
 import requests
-import grequests
 from requests import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import sys
+
 from webparser import WebParser
 from pagenode import PageNode
 import pdb
@@ -122,7 +123,7 @@ class WebCrawler:
                 urlString = 'http://' + urlString
                 retry = True
                 continue
-            except (requests.HTTPError, requests.ConnectionError):
+            except (requests.HTTPError, requests.ConnectionError, requests.ReadTimeout):
                 e = sys.exc_info()
                 eText = str(e[1])
                 returnObj = (eText,followed)
@@ -137,7 +138,6 @@ class WebCrawler:
             finally:
                 if not retry:
                     return returnObj
-
         
     def _parseForUrls(self, html):
         self.urls = self.parser.parseUrls(html)
@@ -145,8 +145,95 @@ class WebCrawler:
             return False 
         else:
             return True
+
+    # Accepts list of nodes
+    def crawlPool(self, nodeList, crawlType):
+        nodePool = dict((node,0) for node in nodeList)
+
+
+        ret = self._fetchPool(nodePool)
+
+        if ret == 0:
+            self._parsePool(nodePool, crawlType)
+        
         
 
+    # Concurrently fetches all pages in the nodePool and returns once all are complete
+    # nodePool: dictionary with pagenodes as keys, returns with requests html responses as values. 
+    def _fetchPool(self, nodePool):
+        loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            loop = asyncio.get_event_loop()
 
-    
+        session = HTMLSession()
+        async def fetchPage(url):
+            try:
+                response = session.get(url, timeout=3, stream=False,verify=False)
+                return response
+            except requests.exceptions.MissingSchema:
+                url = 'http://' + url
+                return await fetchPage(url)
+            except requests.exceptions.ReadTimeout:
+                return "Timed out"
+            except requests.ConnectionError:
+                return "connection error"
+            except:
+                e = sys.exc_info()
+                return str(e[1])
+                sys.exit()
 
+        runningPool = asyncio.gather( *[fetchPage(rawNode.nodeUrl) for rawNode in nodePool.keys()] )
+        responsePool = loop.run_until_complete(runningPool)
+
+        loop.close()
+
+        if len(responsePool) != len(nodePool):
+            return 1
+        else:
+            responseIter = 0
+            for key in nodePool.keys():
+                nodePool[key] = responsePool[responseIter]
+                responseIter += 1
+            return 0
+
+    # Concurrently parses all pages in the nodePool and returns once all are complete.
+    # Parses for urls, keywords, and/or Title depending on parseType (0=all, 1=url+title, 2=title)
+    # nodePool: dictionary of (pageNode, requests-html response) key,value pairs
+    def _parsePool(self, nodePool, parseType):
+        loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            loop = asyncio.get_event_loop()
+        
+        async def getURLs(poolItem, parseType):
+            try:
+               
+                node = poolItem[0]
+                resp = poolItem[1]
+                html = resp.html
+
+                title = self.parser.getPageTitle(html)
+                node.setTitle(title)
+                
+                if parseType == 1 or parseType == 0:
+                    links = self.parser.parseUrls(html)
+                    node.urlList = list(links)
+
+                if parseType == 0:
+                    keywordStatus = self.parser.parseKeyword(html, self.keyword)
+                    node.setKeywordStatus(keywordStatus)
+                
+                node.setCrawledStatus(True)
+                return 0
+            except:
+                e = sys.exc_info()
+                sys.stderr.write(str(e[1]))
+                node.setCrawledStatus(True)
+                return 1
+
+        runningPool = asyncio.gather( *[getURLs(item,1) for item in nodePool.items()] )
+        
+        parsedPool = loop.run_until_complete(runningPool)
+        loop.close()
+        return 0
