@@ -3,17 +3,27 @@ const express = require("express");
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const shortid = require("shortid");
-const spawn = require("child_process").spawn;
+const execFile = require("child_process").execFile;
 
 // Define constants
 const PORT = 3000;
-const DFS_LIMIT = 15; // page limit for breadth-first search
-const BFS_LIMIT = 12; // page limit for depth-first search
-const DFS_SEARCH = 1; // search value sent to python web crawler for dfs
-const BFS_SEARCH = 2; // search value sent to python web crawler for bfs
-const path_logs = "/public/log_files/"; // Path where log files are stored
+const DFS_LIMIT = 100; // page limit for breadth-first search
+const BFS_LIMIT = 3; // page limit for depth-first search
+const DFS_SEARCH = 1; // DO NOT EDIT - search value sent to python web crawler for dfs
+const BFS_SEARCH = 2; // DO NOT EDIT - search value sent to python web crawler for bfs
+const PATH_LOGS = "/public/log_files/"; // Path where log files are stored
 const CWD_CRAWLER = "../crawler"; // Path to python script
-const python_script_name = "core.py";
+const PYTHON_SCRIPT_NAME = "core.py";
+const TIMEOUT = 60000; // kill child process after this many milliseconds
+const SIGNAL = "SIGKILL"; // signal to send to terminate child process
+
+// ERR_TEXT is the text of the error log file sent by send_error_xml_response
+const ERR_TEXT = [
+	"The required values were not sent to the server. Please try again.", //0
+	"The numeric limit is too high for this search method. Please enter a lower numeric limit and try again.", //1
+	"Timeout: The data crawler did not complete execution in time. Please try a different search.", //2
+	"There was an error with the data crawler. Please try a different search." //3
+];
 
 // Initialize Express
 var app = express();
@@ -22,7 +32,7 @@ app.use(bodyParser.json());
 app.set("port", PORT);
 app.use(express.static("public"));
 
-app.use(express.static(path_logs));
+app.use(express.static(PATH_LOGS));
 
 
 // Homepage
@@ -57,7 +67,7 @@ app.post("/post", function(req, res) {
 		if (key != "keyword") { // "keyword" is not required
 			// If required parameter is missing, send error XML file
 			if (val == "" || val == undefined || val == null) {
-				send_error_xml_response(res, 3, "Error: missing required parameter: " + key);
+				send_error_xml_response(res, 0);
 				return; // Stop execution so another response is not returned
 			}
 		}
@@ -74,7 +84,7 @@ app.post("/post", function(req, res) {
 
 			// If "search" is not a valid value, send an error response
 			} else {
-				send_error_xml_response(res, 4, "Error: invalid value for parameter: " + key);
+				send_error_xml_response(res, 0);
 				return; // Stop execution so another response is not returned
 			}
 		}
@@ -85,7 +95,7 @@ app.post("/post", function(req, res) {
 			// Ensure valid "limit" for breadth-first search
 			if (form_data[1].val == BFS_SEARCH) {
 				if (val < 1 || val > BFS_LIMIT) {
-					send_error_xml_response(res, 2, "Page limit too high");
+					send_error_xml_response(res, 1);
 					return; // Stop execution so another response is not returned
 				}
 			}
@@ -93,7 +103,7 @@ app.post("/post", function(req, res) {
 			// Ensure valid "limit" for depth-first search
 			if (form_data[1].val == DFS_SEARCH) {
 				if (val < 1 || val > DFS_LIMIT) {
-					send_error_xml_response(res, 2, "Page limit too high");
+					send_error_xml_response(res, 1);
 					return; // Stop execution so another response is not returned
 				}
 			}
@@ -116,50 +126,45 @@ app.post("/post", function(req, res) {
 
 	/* Call the Data Crawler (Python script) */
 	// Reference: https://stackoverflow.com/questions/23450534/how-to-call-a-python-function-from-node-js
+	// Reference: https://nodejs.org/api/child_process.html
 	var pythonProcess;
 
 	// If keyword (form_data[3].val) does not exists, call data crawler without keyword
 	if (form_data[3].val == "") {
-		pythonProcess = spawn('python', [python_script_name, filename,
-			form_data[0].val, form_data[2].val, form_data[1].val], {cwd:CWD_CRAWLER});
+		pythonProcess = execFile('python',
+			[PYTHON_SCRIPT_NAME, filename,
+			form_data[0].val, form_data[2].val, form_data[1].val],
+			{cwd:CWD_CRAWLER, timeout:TIMEOUT, killSignal:SIGNAL},
+			// Callback function
+			function (error, stdout, stderr) {
+				if (stderr) {console.error(stderr)}; // print stderr from child process
+				if (error) {
+					console.error(error);
+					send_error_xml_response(res, 2);
+					return; // Stop execution so another response is not returned
+				}
+				send_response(res, filename);
+			}
+		);
 	}
 	// Else keyword exists, call data crawler with keyword
 	else {
-		pythonProcess = spawn('python', [python_script_name, filename,
-			form_data[0].val, form_data[2].val, form_data[1].val,
-			form_data[3].val], {cwd:CWD_CRAWLER});
-	}
-
-
-	/* Receive response from data crawler */
-
-	// If the child process has an error, print it to the console
-	pythonProcess.stderr.on('data', (data) => {
-		console.error(`child stderr:\n${data}`);
-	});
-
-
-	//pythonProcess.stdout.on('data', function(data) {
-	pythonProcess.on('exit', function(code, signal) {
-		
-		/* Send the XML log file to the server */
-		try {
-			if (fs.existsSync(__dirname + path_logs + filename)) {
-				res.type("application/xml");
-				res.status(200);
-				res.sendFile(__dirname + path_logs + filename);
-				return;
-			} else {
-				send_error_xml_response(res, 6, "There was an error with the data crawler");
-				return;
+		pythonProcess = execFile('python',
+			[PYTHON_SCRIPT_NAME, filename,
+			form_data[0].val, form_data[2].val, form_data[1].val, form_data[3].val],
+			{cwd:CWD_CRAWLER, timeout:TIMEOUT, killSignal:SIGNAL},
+			// Callback function
+			function (error, stdout, stderr) {
+				if (stderr) {console.error(stderr)}; // print stderr from child process
+				if (error) {
+					console.error(error);
+					send_error_xml_response(res, 2);
+					return; // Stop execution so another response is not returned
+				}
+				send_response(res, filename);
 			}
-		} catch(err) {
-			console.error(err)
-			send_error_xml_response(res, 6, "There was an error with the data crawler");
-			return;
-		}
-	});
-
+		);
+	}
 });
 
 
@@ -187,16 +192,15 @@ app.listen(app.get("port"), function() {
 
 
 
-/* This function sends an XML response with a given error code, error text
+/* This function sends an XML response with the text associated with err_number
  * @param {Object} res - Express response object
- * @param {number} code - Numeric error code
- * @param {string} text - Error text
+ * @param {number} err_number - Numeric error code associated with array ERR_TEXT
  */
-function send_error_xml_response(res, code, text) {
+function send_error_xml_response(res, err_number) {
 	var response_body = "<?xml version='1.0' ?><crawler_log><error><code>"
-	response_body += code;
+	response_body += err_number;
 	response_body += "</code><text>";
-	response_body += text;
+	response_body += ERR_TEXT[err_number];
 	response_body += "</text></error></crawler_log>"
 
 	res.type("application/xml");
@@ -211,6 +215,29 @@ function send_error_xml_response(res, code, text) {
  */
 function generate_filename() {
 	var id = shortid.generate();
-	var filename = "log_" + id + ".xml";
+	var filename = "crawler_log_" + id + ".xml";
 	return filename;
+}
+
+
+/* This is the callback function for the python web crawler
+ * This function sends the contents of the log file back to the web page
+ *
+ */
+function send_response(res, filename) {
+	try {
+		if (fs.existsSync(__dirname + PATH_LOGS + filename)) {
+			res.type("application/xml");
+			res.status(200);
+			res.sendFile(__dirname + PATH_LOGS + filename);
+			return;
+		} else {
+			send_error_xml_response(res, 3);
+			return;
+		}
+	} catch(err) {
+		console.error(err)
+		send_error_xml_response(res, 3);
+		return;
+	}
 }
