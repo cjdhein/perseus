@@ -1,17 +1,21 @@
 import sys
 import requests_html
 import pdb
+import re
 
 
-class WebParser:
 
-    def parseKeyword(self, html, keyword):
+class WebParser(object):
+
+    __slots__ = []
+
+    def parseKeyword(html, keyword):
 
         # convert keyword to lowercase unicode for searching
         ukey = str(keyword).lower()
 
         # obtain full text contents of the page (as unicode) and make it lowercase
-        fullText = html.get_text().lower()
+        fullText = html.full_text.lower()
         
         if fullText.count(ukey) > 0:
             return True
@@ -19,8 +23,11 @@ class WebParser:
             return False
 
 
-    def getPageTitle(self,html):
+    def getPageTitle(html):
         try:
+
+            if type(html) == str:
+                return html
             # Returns a list of all matching elements
             title = html.find('title')
 
@@ -30,6 +37,7 @@ class WebParser:
             else:
                 title = title[0].text
         except:
+            pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write(str(e[1]))
             exit(1)
@@ -39,14 +47,31 @@ class WebParser:
     # Desc:     parses provided Requests-http object for all links in absolute form
     # Args:     html - a Requests-HTTP representation of the HTML content fetched from the url
     # Returns:  a set containing each unique absolute link found in the html
-    def parseUrls(self,html):
-
-        uniqueLinks = {}
+    def parseUrls(html):
 
         try:
-            all_links = html.absolute_links
-            return all_links
+            allLinks = list(html.absolute_links)
+
+            scrubbedlinks = WebParser._scrubExtensions(allLinks)
+
+
+            return scrubbedlinks
+        except UnicodeDecodeError:
+            raise
         except:
             e = sys.exc_info()
             sys.stderr.write(e[1])
             sys.exit(1)
+
+    def _scrubExtensions(links):
+        scrubbed = list()
+        preLen = len(links)
+        while len(links) >= 1:
+            link = links.pop()
+            match = re.search(r".*(?:jpe?g|png|svg|gif|bmp|exe|pdf|zip)$",link)
+            if match is None:
+                scrubbed.append(link)
+        if preLen - len(scrubbed) != 0:
+            print("Scrubbed out %s links - %s remain\n" % (str(preLen-len(scrubbed)), str(len(scrubbed)) ))
+
+        return scrubbed
