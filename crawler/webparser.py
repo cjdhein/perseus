@@ -36,6 +36,7 @@ class WebParser(object):
             else:
                 title = title[0].text
         except:
+            pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write(str(e[1]))
             exit(1)
@@ -51,8 +52,11 @@ class WebParser(object):
 
         try:
             all_links = html.absolute_links
-            return all_links
+            return list(all_links)
+        except UnicodeDecodeError:
+            raise
         except:
+            pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write(e[1])
             sys.exit(1)

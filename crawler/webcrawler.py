@@ -7,6 +7,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from webparser import WebParser
 from pagenode import PageNode
 import pdb
+from urllib.parse import urlparse
 
 DEBUG = True
 
@@ -32,17 +33,14 @@ class WebCrawler(object):
     #   1: found keyword
     #   2: Error opening URL
     def crawl(self, page, crawlType):
-        response = self._fetch(page.nodeUrl)
-        fetched = self._fetch(page.nodeUrl)
-        loadedUrl = fetched[1]
-        html = fetched[0]
-
-        resp = self._parsePage(page, html)
+        if urlparse(page.nodeUrl).scheme == '':
+            pdb.set_trace()
+        resp = self._fetch(page.nodeUrl)
 
         # response of 2 means error occurred
-        if resp == 2:
+        if type(resp) is str:
             page.setError(resp)
-            return resp
+            return 2
 
         try:
             self._parsePage(page,resp,crawlType)
@@ -54,10 +52,10 @@ class WebCrawler(object):
             sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
             sys.exit(1)               
         except:
+            pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write(str(e[0]) + " " + str(e[1]))
-            page.setError("Something went wrong here..." + str(e[1]))
-            sys.stderr.write("Something went wrong here..." + str(e[1]))
+            page.setError(str(e[0]))
             return 2
         
         # If keyword is found, return code 1 (keyword found)
@@ -86,6 +84,7 @@ class WebCrawler(object):
                 returnObj = response
                 retry = False
             except requests.exceptions.MissingSchema:
+                pdb.set_trace()
                 urlString = 'http://' + urlString
                 retry = True
                 continue
@@ -104,14 +103,6 @@ class WebCrawler(object):
             finally:
                 if not retry:
                     return returnObj
-
-    # Wrapper function for call to Webparser 
-    def _parseForUrls(self, html):
-        self.urls = WebParser.parseUrls(html)
-        if len(self.urls) <= 0:
-            return False 
-        else:
-            return True
 
     # Crawls the provided list of nodes using the provided crawl type. 
     # crawlTypes:
@@ -148,7 +139,10 @@ class WebCrawler(object):
             
             # Loop over nodes and parse each
             for i in range(len(nodeList)):
-                self._parsePage(nodeList[i],responsePool[i],crawlType)
+                if type(responsePool[i]) is str:
+                    nodeList[i].setError(responsePool[i])
+                else:
+                    self._parsePage(nodeList[i],responsePool[i],crawlType)
                 if nodeList[i].getKeywordStatus():
                     keywordHit = True
                     break
@@ -182,10 +176,10 @@ class WebCrawler(object):
             except requests.exceptions.MissingSchema:
                 url = 'http://' + url
                 return await fetch(self,url)
-            except requests.exceptions.ReadTimeout:
-                return "Timed out while reading page"
-            except requests.ConnectionError:
-                return "A connection error occurred"
+            except (requests.HTTPError, requests.ConnectionError, requests.ReadTimeout):
+                e = sys.exc_info()
+                eText = str(e[1])
+                return eText                
             except KeyboardInterrupt:
                 sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
                 sys.exit(1)               
@@ -261,5 +255,6 @@ class WebCrawler(object):
             pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write("In parse page: "+ str(e[1]))
+            node.setError(str(e[0]))
             node.setCrawledStatus(True)
             return 1

@@ -40,6 +40,7 @@ class PageTree:
 
     # Called to start the process. Branches to DFS or BFS depending on the search type
     def beginCrawl(self):
+
         if self.searchType == 1:
             returnStatus = self.crawlDFS()
             # Error on root node. Write an error log file
@@ -50,7 +51,9 @@ class PageTree:
                 self.writeLogFile()            
         elif self.searchType == 2:
             returnStatus = self.asyncBFS()
-            if returnStatus == 0:
+            if returnStatus == 2:
+                self.writeErrorLog()
+            else:
                 self.writeLogFile()
 
     # Performs a depth first search
@@ -107,20 +110,16 @@ class PageTree:
 
             # If this page has URLs available
             if listLen >= 1:
-                # Get random index
-                i = random.randrange(len(aNode.urlList))
+                # Get random url from the set
+                newUrl = random.choice(aNode.urlList)
+                aNode.urlList.remove(newUrl)
 
-                # Swap URL at chosen index with the end to speed up the procedure
-                aNode.urlList[i], aNode.urlList[-1] = aNode.urlList[-1], aNode.urlList[i]
-
-                # set newUrl, newId and construct the new node
-                newUrl = aNode.urlList.pop()
+                # get newId and construct the new node
                 newId = self.getUID()
                 newNode = PageNode(aNode, newId, newUrl, self.currentLevel)
 
                 # Add new node to current node's connections, setting it to 0 to indicate it hasn't been visited
                 aNode.nodeList.append(newNode)
-                aNode.nodeDict[newNode] = 0
 
                 # Set a new active node, and go down a level
                 self.currentLevel += 1
@@ -149,6 +148,10 @@ class PageTree:
             #   0: full crawl (urls, title, keyword)
             #   1: fast crawl (title, keyword)
             ret = wc.crawlPool(thisCrawl,0)
+
+            # If this is the root node and it errored, return 2 (fatal error on crawl)
+            if thisCrawl[0] == self.rootNode and self.rootNode.getError() is not None:
+                return 2
             
             
             while len(thisCrawl) > 0:
@@ -201,7 +204,7 @@ class PageTree:
         while len(q) > 0:
             node = q.popleft()
 
-            if not node.visited:
+            if not node.visited and node.getCrawledStatus():
                 node.visitNode()
 
                 page = etree.SubElement(xmlRoot,"page")
