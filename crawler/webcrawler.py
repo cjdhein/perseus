@@ -33,8 +33,7 @@ class WebCrawler(object):
     #   1: found keyword
     #   2: Error opening URL
     def crawl(self, page, crawlType):
-        if urlparse(page.nodeUrl).scheme == '':
-            pdb.set_trace()
+
         resp = self._fetch(page.nodeUrl)
 
         # response of 2 means error occurred

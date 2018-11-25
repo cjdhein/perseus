@@ -1,6 +1,7 @@
 import sys
 import requests_html
 import pdb
+import re
 
 
 
@@ -48,15 +49,29 @@ class WebParser(object):
     # Returns:  a set containing each unique absolute link found in the html
     def parseUrls(html):
 
-        uniqueLinks = {}
-
         try:
-            all_links = html.absolute_links
-            return list(all_links)
+            allLinks = list(html.absolute_links)
+
+            scrubbedlinks = WebParser._scrubExtensions(allLinks)
+
+
+            return scrubbedlinks
         except UnicodeDecodeError:
             raise
         except:
-            pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write(e[1])
             sys.exit(1)
+
+    def _scrubExtensions(links):
+        scrubbed = list()
+        preLen = len(links)
+        while len(links) >= 1:
+            link = links.pop()
+            match = re.search(r".*(?:jpe?g|png|svg|gif|bmp|exe|pdf|zip)$",link)
+            if match is None:
+                scrubbed.append(link)
+        if preLen - len(scrubbed) != 0:
+            print("Scrubbed out %s links - %s remain\n" % (str(preLen-len(scrubbed)), str(len(scrubbed)) ))
+
+        return scrubbed
