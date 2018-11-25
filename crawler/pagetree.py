@@ -1,10 +1,12 @@
 from webcrawler import WebCrawler
+import sys
+import resource
 from pagenode import PageNode
 import random
 import pdb
 from collections import deque
 from lxml import etree
-
+import gc
 # print debug text if true
 DEBUG = False
 
@@ -32,7 +34,8 @@ class PageTree:
         self.rootNode = PageNode(None,self.getUID(),startUrl,0) 
         self.activeNode = None
         self.rootError = None
-        self.crawled = dict()
+        self.crawled = set()
+#        self.crawled = dict()
 
         random.seed()
 
@@ -54,9 +57,11 @@ class PageTree:
             #else:
                 #self.writeLogFile()
         else:
-            returnStatus = self.poolBFS()
-            #if returnStatus == 0:
-                #self.writeLogFile()
+            returnStatus = self.asyncBFS()
+            for item in gc.garbage:
+                print(item)
+            if returnStatus == 0:
+                self.writeLogFile()
 
     def crawlDFS(self):
         if DEBUG:
@@ -79,7 +84,8 @@ class PageTree:
                     retStat = wc.crawl(aNode, 1)
 
                 # Add the URL to the crawled dictionary
-                self.crawled[aNode.nodeUrl] = aNode.urlList
+                self.crawled.add(aNode.nodeUrl)
+                #self.crawled[aNode.nodeUrl] = aNode.urlList
 
                 # Return codes:
                 #   0: good return
@@ -97,8 +103,8 @@ class PageTree:
                         return 2                    
                     # If not, we back set the active node to the parent node
                     else:
-                        del aNode.parentNode.nodeDict[aNode]
-                        aNode.parentNode.nodeDict
+                        aNode.parentNode.nodeList.remove(aNode)
+#                        del aNode.parentNode.nodeDict[aNode]
                         self.activeNode = aNode.parentNode 
                     continue                    
 
@@ -124,6 +130,7 @@ class PageTree:
                 newNode = PageNode(aNode, newId, newUrl, self.currentLevel)
 
                 # Add new node to current node's connections, setting it to 0 to indicate it hasn't been visited
+                aNode.nodeList.append(newNode)
                 aNode.nodeDict[newNode] = 0
 
                 # Set a new active node, and go down a level
@@ -143,12 +150,15 @@ class PageTree:
 
         for url in urls:
             newNode = PageNode(parentNode,self.getUID(),url,self.currentLevel)
-            parentNode.nodeDict[newNode] = 0
+            parentNode.nodeList.append(newNode)
+            
             if self.currentLevel-1 < self.limit:
-                if newNode.nodeUrl not in self.crawled.keys():
+                if newNode.nodeUrl not in self.crawled:
                     nextCrawl.append(newNode)
 
-    def poolBFS(self):
+    def asyncBFS(self):
+        if DEBUG:
+            print("Search BFS - Pooled")
         wc = self.webCrawler
         thisCrawl = list()
         thisCrawl.append(self.rootNode)
@@ -156,23 +166,29 @@ class PageTree:
         nextCrawl = list()
 
         while self.currentLevel <= self.limit:
-
-            # crawlType:    0 = urls, keyword, title
-            #               1 = urls, title
-            #               2 = title            
+            # crawlTypes:
+            #   0: full crawl (urls, title, keyword)
+            #   1: fast crawl (title, keyword)
             if self.keywordExists:
-                wc.crawlPool(thisCrawl,0)
+              ret = wc.crawlPool(thisCrawl,0)
+              if ret == 2: #keyword hit
+                  return 0
             else:
                 wc.crawlPool(thisCrawl,1)
             
+            print("This crawl:" + str(sys.getsizeof(thisCrawl)))
             
 
             while len(thisCrawl) > 0:
                 node = thisCrawl.pop()
-                self.crawled[node.nodeUrl] = node
+                self.crawled.add(node.nodeUrl)
+#                self.crawled[node.nodeUrl] = node
                 self.buildNodes(node,nextCrawl)
+                node.urlList = None
 
 
+            print("This crawl after:" + str(sys.getsizeof(thisCrawl)))
+            print("Next crawl: " + str(sys.getsizeof(nextCrawl)))
             self.currentLevel += 1
 
             # ensure thisCrawl is clear
@@ -186,10 +202,8 @@ class PageTree:
         wc.crawlPool(thisCrawl, 2)
         return 0
 
-        
 
-        
-
+    # Not currently being used - switched to 'asyncBFS' method for speed
     def crawlBFS(self):
         if DEBUG:
             print("Search BFS")
@@ -217,7 +231,7 @@ class PageTree:
             self.activeNode = currentQ.popleft()
             aNode = self.activeNode
             tmpList = aNode.urlList
-            aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
+            aNode.urlList = [url for url in tmpList if url not in self.crawled]
 
             # If the node was not crawled, crawl it
             if aNode.nodeUrl not in self.crawled:
@@ -232,7 +246,8 @@ class PageTree:
                     retStat = wc.crawl(aNode, 1)
                 
                 # Add the URL to the crawled dictionary
-                self.crawled[aNode.nodeUrl] = aNode
+                self.crawled.add(aNode.nodeUrl)
+                #self.crawled[aNode.nodeUrl] = aNode
 
                 # Return codes:
                 #   0: good return
@@ -280,7 +295,8 @@ class PageTree:
                     newNode = PageNode(aNode,newId,newUrl,self.currentLevel)
                     
                     # Add the new node to the current node's dict, with a 0 to indicate it has not been visited                    
-                    aNode.nodeDict[newNode] = 0
+                    aNode.nodeList.append(newNode)
+                   # aNode.nodeDict[newNode] = 0
                     nextQ.append(newNode)
                 
 
@@ -295,7 +311,8 @@ class PageTree:
                 
                 self.currentLevel += 1
 
-            self.crawled[aNode.nodeUrl] = aNode
+            self.crawled.add(aNode.nodeUrl)
+            #self.crawled[aNode.nodeUrl] = aNode
 
                 
     def getUID(self):
@@ -312,6 +329,7 @@ class PageTree:
         
         while len(q) > 0:
             node = q.popleft()
+            print("%s" % str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
 
             if not node.visited:
                 node.visitNode()
@@ -341,11 +359,18 @@ class PageTree:
                 if DEBUG:
                     print(etree.tostring(page,pretty_print=True))
             
-            if node.hasUnvisited():
-                # For each child in the nodeDict
-                for child in node.nodeDict.keys():
-                    if child.visited == False:
-                        q.append(child)
+            child = node.getUnvisited()
+
+            while child is not None:
+                q.append(child)
+                child = node.getUnvisited()
+                
+#            node = None
+           # if node.hasUnvisited():
+           #     # For each child in the nodeDict
+           #     for child in node.nodeDict.keys():
+           #         if child.visited == False:
+           #             q.append(child)
 
         xmlOut = open(LOGDIRECTORY + self.outfile,"wb")
         xmlDoc.write(xmlOut,pretty_print=True)

@@ -3,9 +3,12 @@ import requests_html
 import pdb
 
 
-class WebParser:
 
-    def parseKeyword(self, html, keyword):
+class WebParser(object):
+
+    __slots__ = []
+
+    def parseKeyword(html, keyword):
 
         # convert keyword to lowercase unicode for searching
         ukey = str(keyword).lower()
@@ -19,7 +22,7 @@ class WebParser:
             return False
 
 
-    def getPageTitle(self,html):
+    def getPageTitle(html):
         try:
 
             if type(html) == str:
@@ -42,7 +45,7 @@ class WebParser:
     # Desc:     parses provided Requests-http object for all links in absolute form
     # Args:     html - a Requests-HTTP representation of the HTML content fetched from the url
     # Returns:  a set containing each unique absolute link found in the html
-    def parseUrls(self,html):
+    def parseUrls(html):
 
         uniqueLinks = {}
 
