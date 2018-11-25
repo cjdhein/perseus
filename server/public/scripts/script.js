@@ -35,7 +35,8 @@ crawlerApp.factory('graphData', function() {
     	addNode: addNode,
     	addEdge: addEdge,
     	getGraph: get,
-    	reset: reset
+    	reset: reset,
+    	replace: replace
 	};
 
 	function addNode(node) {
@@ -57,6 +58,10 @@ crawlerApp.factory('graphData', function() {
 	function reset() {
 		graph.nodes = [];
 		graph.edges = [];
+	};
+
+	function replace(node, index) {
+		graph.nodes[index] = node;
 	};
 });
 
@@ -107,9 +112,9 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 		var xml = parser.parseFromString(text, 'application/xml');
 		var pages = xml.getElementsByTagName('page');
 
-		var idToLevel = {
-			0: 1
-		};
+		var idToLevel = {};
+
+		var numPerLevel = {};
 
 		for(var i = 0; i < pages.length; ++i) {
 			var nodes = pages[i].children;
@@ -119,13 +124,24 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 
 			if(i == 0) {
 				newNode["level"] = 1;
+				idToLevel[0] = 1;
+				numPerLevel[1] = 1;
 			}
 
 			for(var j = 0; j < nodes.length; ++j) {
 				if(nodes[j].nodeName == 'parent_id') {
 					graphData.addEdge(i, nodes[j].innerHTML);
-					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 3;
-					newNode["level"] = idToLevel[i]; 
+
+					var n = idToLevel[nodes[j].innerHTML] + 1;
+
+					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 1;
+					newNode["level"] = idToLevel[nodes[j].innerHTML] + 1; 
+					if(n in numPerLevel) {
+						numPerLevel[n] = numPerLevel[n] + 1;
+					}
+					else {
+						numPerLevel[n] = 1;
+					}
 				}
 				else if(nodes[j].nodeName == 'keyword') {
 					newNode['keyword'] = true;
@@ -152,6 +168,24 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 			}
 
 			graphData.addNode(newNode);
+		}
+
+		var levelRank = {};
+		for(var i = 0; i < Object.keys(numPerLevel).length; i++) {
+			if (i == 0) {
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10);
+			}
+			else {
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10) + levelRank[i];
+			}
+		}
+
+		var nodes = graphData.getGraph().nodes;
+		console.log(nodes);
+		for(var i = 0; i < nodes.length; i++) {
+			var newLevel = levelRank[idToLevel[nodes[i].id]];
+			nodes[i]["level"] = newLevel;
+			graphData.replace(nodes[i], i);
 		}
 	};
 
