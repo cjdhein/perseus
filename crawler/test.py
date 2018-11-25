@@ -1,29 +1,26 @@
-from bs4 import BeautifulSoup as bs
-from urlparse import urlparse
-import urllib2
+from requests_html import HTMLSession
+from requests_html import AsyncHTMLSession
+import requests
+import pdb
 import sys
+import asyncio
 from pagenode import PageNode
+from pagetree import PageTree
+import time
+url ="http://www.nytimes.com"
+tree1 = PageTree('tree1.xml',url,1,2,None)
+tree2 = PageTree('tree1.xml',url,1,2,None)
 
-testNode = PageNode(None, 1, "www.google.com","Google",False)
-testNode2 = PageNode(testNode, 2, "www.bing.com","Bing",False)
+poolStart = time.time()
+pdb.set_trace()
+tree1.beginCrawl()
+poolStop = time.time()
 
-print testNode
-print "--------------------"
-print testNode2
-#url = "https://www.gutenberg.org/files/11/11-h/11-h.htm"
-#keyword = str(sys.argv[1])
-#print "Searching Alice in Wonderland for the word " + keyword
-#html = urllib2.urlopen(url).read()
-#
-#soup = bs(html,'lxml')
-#
-#theText = soup.get_text().lower()
-#
-#uniSearch = unicode(keyword)
-#
-#found = theText.count(uniSearch.lower())
-#
-#if found >= 1:
-#    print "Found '" + keyword + "' in the text!"
-#else:
-#    print keyword + " was not found in the text."
+print("Async runtime = %s seconds" % (poolStop - poolStart))
+
+singleStart = time.time()
+#tree2.beginCrawl()
+singleStop = time.time()
+
+
+#print("Normal runtime = %s seconds" % (singleStop - singleStart))
