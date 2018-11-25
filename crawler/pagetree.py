@@ -10,8 +10,8 @@ import gc
 DEBUG = False
 
 # hold directory path for the log directory
-#LOGDIRECTORY = "../server/public/log_files/"
-LOGDIRECTORY = "./"
+LOGDIRECTORY = "../server/public/log_files/"
+#LOGDIRECTORY = "./"
 class PageTree:
 
     def __init__ (self,outfile, startUrl, limit, searchType, keyword):

@@ -9,7 +9,7 @@ from pagenode import PageNode
 import pdb
 from urllib.parse import urlparse
 
-DEBUG = True
+DEBUG = False
 
 # Performs crawling of provided web address
 class WebCrawler(object):
