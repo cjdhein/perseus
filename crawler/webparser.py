@@ -51,10 +51,7 @@ class WebParser(object):
 
         try:
             allLinks = list(html.absolute_links)
-
             scrubbedlinks = WebParser._scrubExtensions(allLinks)
-
-
             return scrubbedlinks
         except UnicodeDecodeError:
             raise
@@ -63,6 +60,7 @@ class WebParser(object):
             sys.stderr.write(e[1])
             sys.exit(1)
 
+    # Remove all links that end in invalid extensions
     def _scrubExtensions(links):
         scrubbed = list()
         preLen = len(links)
@@ -71,7 +69,5 @@ class WebParser(object):
             match = re.search(r".*(?:jpe?g|png|svg|gif|bmp|exe|pdf|zip)$",link)
             if match is None:
                 scrubbed.append(link)
-        if preLen - len(scrubbed) != 0:
-            print("Scrubbed out %s links - %s remain\n" % (str(preLen-len(scrubbed)), str(len(scrubbed)) ))
 
         return scrubbed
