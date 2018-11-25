@@ -1,6 +1,5 @@
 from webcrawler import WebCrawler
 import sys
-import resource
 from pagenode import PageNode
 import random
 import pdb
@@ -35,10 +34,11 @@ class PageTree:
         self.activeNode = None
         self.rootError = None
         self.crawled = set()
-#        self.crawled = dict()
 
+        # seed the random integer generator for DFS method
         random.seed()
 
+    # Called to start the process. Branches to DFS or BFS depending on the search type
     def beginCrawl(self):
         if self.searchType == 1:
             returnStatus = self.crawlDFS()
@@ -49,20 +49,11 @@ class PageTree:
             else:
                 self.writeLogFile()            
         elif self.searchType == 2:
-            returnStatus = self.crawlBFS()
-            # Error on root node. Write an error log file
-            #if returnStatus == 2:
-                #self.writeErrorLog()
-            # At least one successfully read node, so write normal log file
-            #else:
-                #self.writeLogFile()
-        else:
             returnStatus = self.asyncBFS()
-            for item in gc.garbage:
-                print(item)
             if returnStatus == 0:
                 self.writeLogFile()
 
+    # Performs a depth first search
     def crawlDFS(self):
         if DEBUG:
             print("Search DFS")
@@ -85,8 +76,7 @@ class PageTree:
 
                 # Add the URL to the crawled dictionary
                 self.crawled.add(aNode.nodeUrl)
-                #self.crawled[aNode.nodeUrl] = aNode.urlList
-
+                
                 # Return codes:
                 #   0: good return
                 #   1: found keyword
@@ -104,7 +94,6 @@ class PageTree:
                     # If not, we back set the active node to the parent node
                     else:
                         aNode.parentNode.nodeList.remove(aNode)
-#                        del aNode.parentNode.nodeDict[aNode]
                         self.activeNode = aNode.parentNode 
                     continue                    
 
@@ -145,17 +134,7 @@ class PageTree:
                 else:
                     self.activeNode = aNode.parentNode 
 
-    def buildNodes(self,parentNode,nextCrawl):
-        urls = parentNode.urlList
-
-        for url in urls:
-            newNode = PageNode(parentNode,self.getUID(),url,self.currentLevel)
-            parentNode.nodeList.append(newNode)
-            
-            if self.currentLevel-1 < self.limit:
-                if newNode.nodeUrl not in self.crawled:
-                    nextCrawl.append(newNode)
-
+    # Performs a breadth first search asynchronously
     def asyncBFS(self):
         if DEBUG:
             print("Search BFS - Pooled")
@@ -169,26 +148,15 @@ class PageTree:
             # crawlTypes:
             #   0: full crawl (urls, title, keyword)
             #   1: fast crawl (title, keyword)
-            if self.keywordExists:
-              ret = wc.crawlPool(thisCrawl,0)
-              if ret == 2: #keyword hit
-                  return 0
-            else:
-                wc.crawlPool(thisCrawl,1)
+            ret = wc.crawlPool(thisCrawl,0)
             
-            print("This crawl:" + str(sys.getsizeof(thisCrawl)))
             
-
             while len(thisCrawl) > 0:
                 node = thisCrawl.pop()
                 self.crawled.add(node.nodeUrl)
-#                self.crawled[node.nodeUrl] = node
                 self.buildNodes(node,nextCrawl)
                 node.urlList = None
 
-
-            print("This crawl after:" + str(sys.getsizeof(thisCrawl)))
-            print("Next crawl: " + str(sys.getsizeof(nextCrawl)))
             self.currentLevel += 1
 
             # ensure thisCrawl is clear
@@ -197,128 +165,31 @@ class PageTree:
             thisCrawl.clear()
             thisCrawl = nextCrawl
             nextCrawl = list()
-        
+            if ret == 2:
+                return 0
         # crawl for titles on last layer
-        wc.crawlPool(thisCrawl, 2)
+        wc.crawlPool(thisCrawl, 1)
         return 0
 
+    # Builds a node for each URL in the parent node's urlList
+    # and adds them to nextCrawl
+    def buildNodes(self,parentNode,nextCrawl):
+        urls = parentNode.urlList
 
-    # Not currently being used - switched to 'asyncBFS' method for speed
-    def crawlBFS(self):
-        if DEBUG:
-            print("Search BFS")
-
-        wc = self.webCrawler
-        
-        # Used to efficiently implement BFS method
-        # currentQ is the queue currently being processed
-        # nextQ is the queue of nodes to be processed after the current nodes are done. 
-        #   currentQ will hold all nodes left to process on the current level
-        #   nextQ holds all nodes to be processed on the next level deeper
-        currentQ = deque()
-        nextQ = deque()
-
-        # Start by adding the root node to the queue
-        currentQ.append(self.rootNode)
-
-        # Set as activeNode to ensure first loop runs
-        self.activeNode = self.rootNode
-        
-        # Loop while the limit has not been hit, the queue is not empty, and we have not hit the keyword
-        while len(currentQ) >= 1 and not self.activeNode.getKeywordStatus():
+        for url in urls:
+            newNode = PageNode(parentNode,self.getUID(),url,self.currentLevel)
+            parentNode.nodeList.append(newNode)
             
-            # Take node from the front of the queue and make it the active node
-            self.activeNode = currentQ.popleft()
-            aNode = self.activeNode
-            tmpList = aNode.urlList
-            aNode.urlList = [url for url in tmpList if url not in self.crawled]
+            if self.currentLevel-1 < self.limit:
+                if newNode.nodeUrl not in self.crawled:
+                    nextCrawl.append(newNode)
 
-            # If the node was not crawled, crawl it
-            if aNode.nodeUrl not in self.crawled:
-                
-                # Branch depending on whether the current level is the limit. If it is not the limit, we proceed with a full crawl, gather all URLs from the node.
-                # If the limit has been reached, we can do a fast crawl to just get the title and check for the keyword.
-                # Trigger the crawl with appropriate crawlType and store return status in retStat.
-                # 0 = Full, 1= Fast 
-                if aNode.level < self.limit:    
-                    retStat = wc.crawl(aNode, 0)
-                else:
-                    retStat = wc.crawl(aNode, 1)
-                
-                # Add the URL to the crawled dictionary
-                self.crawled.add(aNode.nodeUrl)
-                #self.crawled[aNode.nodeUrl] = aNode
-
-                # Return codes:
-                #   0: good return
-                #   1: found keyword
-                #   2: Error opening URL
-                if retStat == 1:
-                    # Set keyword status to true and continue to next loop interation to break out
-                    aNode.setKeywordStatus(True)
-                    continue
-                # Error occured, 
-                elif retStat == 2:
-                    # if this is the root node, we return the error code and exit
-                    if self.activeNode == self.rootNode:
-                        return 2                    
-                    # Otherwise - go back to parent Node for next node 
-                    else:
-                        self.activeNode = aNode.parentNode 
-                    continue
-                # else:
-                #     if DEBUG:
-                #         print "Was: " + str(len(aNode.urlList))
-                #     tmpList = aNode.urlList
-                #     aNode.urlList = [url for url in tmpList if url not in self.crawled.keys()]
-                #     if DEBUG:
-                #         print "Is: " + str(len(aNode.urlList))
-                #         print "" 
-            else:
-                continue
-                #print "Here!!!"
-                #aNode.setTitle(self.crawled[aNode.nodeUrl].getTitle())
-
-            # Loop while there are still URLs to visit
-            while (len(aNode.urlList)) >= 1 and self.currentLevel <= self.limit:
-
-                # get new url
-                newUrl = aNode.urlList.pop()
-                
-                if newUrl in self.crawled:
-                    continue
-                else:
-                    # get next unique ID
-                    newId = self.getUID()
-                    
-                    # create a new node
-                    newNode = PageNode(aNode,newId,newUrl,self.currentLevel)
-                    
-                    # Add the new node to the current node's dict, with a 0 to indicate it has not been visited                    
-                    aNode.nodeList.append(newNode)
-                   # aNode.nodeDict[newNode] = 0
-                    nextQ.append(newNode)
-                
-
-            # Check if current queue is empty and we still have levels left
-            if len(currentQ) <= 0 and self.currentLevel <= self.limit:
-
-                # set to nextQ to start the next level
-                currentQ = nextQ
-
-                # reset the next queue
-                nextQ = deque()
-                
-                self.currentLevel += 1
-
-            self.crawled.add(aNode.nodeUrl)
-            #self.crawled[aNode.nodeUrl] = aNode
-
-                
+    # Returns a new UID       
     def getUID(self):
         self.idCount += 1
         return self.idCount
 
+    # Writes a log file by traversing the generated tree
     def writeLogFile(self):
         xmlRoot = etree.Element("crawler_log")
         xmlDoc = etree.ElementTree(xmlRoot)
@@ -329,7 +200,6 @@ class PageTree:
         
         while len(q) > 0:
             node = q.popleft()
-            print("%s" % str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
 
             if not node.visited:
                 node.visitNode()
@@ -365,17 +235,11 @@ class PageTree:
                 q.append(child)
                 child = node.getUnvisited()
                 
-#            node = None
-           # if node.hasUnvisited():
-           #     # For each child in the nodeDict
-           #     for child in node.nodeDict.keys():
-           #         if child.visited == False:
-           #             q.append(child)
-
         xmlOut = open(LOGDIRECTORY + self.outfile,"wb")
         xmlDoc.write(xmlOut,pretty_print=True)
         xmlOut.close()
 
+    # Writes the error log
     def writeErrorLog(self):
         xmlRoot = etree.Element("crawler_log")
         xmlDoc = etree.ElementTree(xmlRoot)

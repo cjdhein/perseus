@@ -32,28 +32,23 @@ class WebCrawler(object):
     #   1: found keyword
     #   2: Error opening URL
     def crawl(self, page, crawlType):
+        response = self._fetch(page.nodeUrl)
         fetched = self._fetch(page.nodeUrl)
         loadedUrl = fetched[1]
         html = fetched[0]
 
-        # if we got a string back, there was an error fetching
-        # return code 2 (error)
-        if type(html) == str or html is None:
-            page.setTitle("Invalid, broken, or otherwise unreachable URL")
-            page.setError(html)
-            return 2
-        
-        # if DEBUG:
-        #     print self.parser.getPageTitle(html)
+        resp = self._parsePage(page, html)
+
+        # response of 2 means error occurred
+        if resp == 2:
+            page.setError(resp)
+            return resp
+
         try:
-            title = WebParser.getPageTitle(html)
-            page.setTitle(title)
-            page.setCrawledStatus(True)
+            self._parsePage(page,resp,crawlType)
         except AttributeError:
             e = sys.exc_info()
-            page.setError("html is of type " + str(type(html)) + " but should be html object.")
-            sys.stderr.write("\n*****\n" + str(e[0]) + " " + str(e[1]) + "\n")
-            sys.stderr.write("URL: " + loadedUrl + "\n\t type: " + str(type(html)))
+            page.setError(str(e[1]))
             return 2
         except KeyboardInterrupt:
             sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
@@ -61,31 +56,16 @@ class WebCrawler(object):
         except:
             e = sys.exc_info()
             sys.stderr.write(str(e[0]) + " " + str(e[1]))
-            page.setError("Something went wrong here...")
-            sys.stderr.write("\nSomething went wrong here...\n")
+            page.setError("Something went wrong here..." + str(e[1]))
+            sys.stderr.write("Something went wrong here..." + str(e[1]))
             return 2
         
-        # CrawlType of 0 means we are interested in the urls
-        if crawlType == 0 :
-            # Parse the URLs from gathered soup
-            gotUrls = self._parseForUrls(html)
-            # Check if any urls were parsed
-            if gotUrls:
-                # If they were, pass parsed urls to the pageNode's urlList
-                page.urlList = list(self.urls)
-        
-        # If a keyword exists, look for the keyword in text. Returns True if found
-        if self.keywordExists:
-            status = WebParser.parseKeyword(html, self.keyword)
-
-            # If keyword is found, return code 1 (keyword found)
-            if status == True:  
-                return 1
-            # Otherwise return code 0 (normal return)
-            else:
-                return 0
-        else:  
+        # If keyword is found, return code 1 (keyword found)
+        if page.getKeywordStatus():
+            return 1
+        else:
             return 0
+
     # Perform HTML get request on the provided urlString
     # and returning the response object
     def _fetch(self,urlString):
@@ -93,20 +73,17 @@ class WebCrawler(object):
         returnObj = None
         retry = True
 
-        # holds the URL that is actually followed if a redirect occurs
-        followed = None
         while(retry):
             try:
                 session = HTMLSession()
                 response = session.get(urlString, timeout=4, stream=False, verify=False)
-                followed = response.url
 
                 if response.status_code == requests.codes.ok:
                     html = response.html
                 else:
                     html = None
                     response.raise_for_status()
-                returnObj = (html,followed)
+                returnObj = response
                 retry = False
             except requests.exceptions.MissingSchema:
                 urlString = 'http://' + urlString
@@ -115,7 +92,7 @@ class WebCrawler(object):
             except (requests.HTTPError, requests.ConnectionError, requests.ReadTimeout):
                 e = sys.exc_info()
                 eText = str(e[1])
-                returnObj = (eText,followed)
+                returnObj = eText
                 retry = False
             except KeyboardInterrupt:
                 sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
@@ -123,7 +100,7 @@ class WebCrawler(object):
             except:
                 e = sys.exc_info()
                 sys.stderr.write(str(e[1]))
-                sys.exit(1)
+                returnObj = str(e[1])
             finally:
                 if not retry:
                     return returnObj
@@ -137,11 +114,10 @@ class WebCrawler(object):
             return True
 
     # Crawls the provided list of nodes using the provided crawl type. 
-    # crawlType 
+    # crawlTypes:
+    #   0: full crawl (urls, title, keyword)
+    #   1: fast crawl (title, keyword)      
     def crawlPool(self, nodeList, crawlType):
-
-        if DEBUG:
-            print("Inside crawlPool; Crawling %s nodes with crawlType %s" % (str(len(nodeList)), str(crawlType)))
 
         # Get the active event loop
         loop = asyncio.get_event_loop()
@@ -197,7 +173,11 @@ class WebCrawler(object):
         async def fetch(self,url):
             try:
                 response = await session.get(url,timeout=5, stream=True,verify=False)
-                return response
+                if response.status_code != requests.codes.ok:
+                    response.raise_for_status()
+                else:
+                    # Good response, so return the html
+                    return response
             # If schema is missing, retry after prepending http
             except requests.exceptions.MissingSchema:
                 url = 'http://' + url
@@ -231,36 +211,40 @@ class WebCrawler(object):
             tasks.append(f)
 
         taskPool = await asyncio.gather(*tasks, return_exceptions=True)
-        await session.close()
+        #await session.close()
         tasks = None
         return taskPool
 
 
-    
+    # parseTypes:
+    #   0: full crawl (urls, title, keyword)
+    #   1: fast crawl (title, keyword)    
     def _parsePage(self,node,resp,parseType):
         try:
-            
             # If the response was a string, there was an exception
             # and the exception text is assigned as the node title
-            if type(resp) == str:
-                node.setTitle(resp)
-                return 0
-            
+            if type(resp) == str or resp == None:
+                if resp is None:
+                    page.setTitle("Invalid, broken, or otherwise unreachable URL")
+                else:
+                    node.setTitle(resp)
+                return 2
+            else:
+                html = resp.html
+             
             # If parseType is zero we are interested in the URLs
             # otherwise just the title and keywords
             if parseType == 0:
-                node.urlList = WebParser.parseUrls(resp.html)
-
-
+                node.urlList = WebParser.parseUrls(html)
 
             # Parse and assign page title
-            title = WebParser.getPageTitle(resp.html)
+            title = WebParser.getPageTitle(html)
             node.setTitle(title)
             
             # If a keyword exists, parse for it
-
-            keywordStatus = WebParser.parseKeyword(resp.html, self.keyword)
-            node.setKeywordStatus(keywordStatus)
+            if self.keywordExists:
+                    keywordStatus = WebParser.parseKeyword(html, self.keyword)
+                    node.setKeywordStatus(keywordStatus)
             
             node.setCrawledStatus(True)
 
@@ -274,6 +258,7 @@ class WebCrawler(object):
             sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
             sys.exit(1)               
         except:
+            pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write("In parse page: "+ str(e[1]))
             node.setCrawledStatus(True)

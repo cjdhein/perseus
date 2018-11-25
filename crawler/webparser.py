@@ -14,7 +14,7 @@ class WebParser(object):
         ukey = str(keyword).lower()
 
         # obtain full text contents of the page (as unicode) and make it lowercase
-        fullText = html.get_text().lower()
+        fullText = html.full_text.lower()
         
         if fullText.count(ukey) > 0:
             return True
