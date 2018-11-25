@@ -12,6 +12,7 @@
     "express": "^4.13.2",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.11.3",
-    "mysql": "^2.8.0"
+    "mysql": "^2.8.0",
+    "shortid": "^2.2.14"
   }
 }
