@@ -37,8 +37,7 @@ class WebCrawler(object):
         resp = self._fetch(page.nodeUrl)
 
         # response of 2 means error occurred
-        if type(resp) is str:
-            page.setError(resp)
+        if type(resp) is str or resp is None:
             return 2
 
         try:
@@ -69,6 +68,7 @@ class WebCrawler(object):
 
         returnObj = None
         retry = True
+        fixAttempted = False
 
         while(retry):
             try:
@@ -83,9 +83,12 @@ class WebCrawler(object):
                 returnObj = response
                 retry = False
             except requests.exceptions.MissingSchema:
-                pdb.set_trace()
-                urlString = 'http://' + urlString
-                retry = True
+                if fixAttempted:
+                    retry = False
+                else:
+                    urlString = 'http://' + urlString
+                    fixAttempted = True
+                    retry = True
                 continue
             except (requests.HTTPError, requests.ConnectionError, requests.ReadTimeout):
                 e = sys.exc_info()
@@ -218,10 +221,10 @@ class WebCrawler(object):
             # and the exception text is assigned as the node title
             if type(resp) == str or resp == None:
                 if resp is None:
-                    page.setTitle("Invalid, broken, or otherwise unreachable URL")
+                    node.setTitle("Invalid, broken, or otherwise unreachable URL")
                 else:
                     node.setTitle(resp)
-                return 2
+                return resp
             else:
                 html = resp.html
              
