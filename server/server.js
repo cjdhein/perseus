@@ -6,7 +6,7 @@ const shortid = require("shortid");
 const execFile = require("child_process").execFile;
 
 // Define constants
-const PORT = 3000;
+const PORT = 3004;
 const DFS_LIMIT = 100; // page limit for breadth-first search
 const BFS_LIMIT = 3; // page limit for depth-first search
 const DFS_SEARCH = 1; // DO NOT EDIT - search value sent to python web crawler for dfs
@@ -131,8 +131,8 @@ app.post("/post", function(req, res) {
 
 	// If keyword (form_data[3].val) does not exists, call data crawler without keyword
 	if (form_data[3].val == "") {
-		pythonProcess = execFile('python',
-			[PYTHON_SCRIPT_NAME, filename,
+		pythonProcess = execFile('pipenv',
+			['run','python3',PYTHON_SCRIPT_NAME, filename,
 			form_data[0].val, form_data[2].val, form_data[1].val],
 			{cwd:CWD_CRAWLER, timeout:TIMEOUT, killSignal:SIGNAL},
 			// Callback function
@@ -149,8 +149,8 @@ app.post("/post", function(req, res) {
 	}
 	// Else keyword exists, call data crawler with keyword
 	else {
-		pythonProcess = execFile('python',
-			[PYTHON_SCRIPT_NAME, filename,
+		pythonProcess = execFile('pipenv',
+			['run','python3',PYTHON_SCRIPT_NAME, filename,
 			form_data[0].val, form_data[2].val, form_data[1].val, form_data[3].val],
 			{cwd:CWD_CRAWLER, timeout:TIMEOUT, killSignal:SIGNAL},
 			// Callback function

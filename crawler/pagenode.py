@@ -1,10 +1,11 @@
-import unicodedata
 from types import *
 import pdb
+    
+#represents a node in the tree - each node being a web page
 
-class PageNode:
+class PageNode(object):
 
-    #represents a node in the tree - each node being a web page
+    __slots__ = ['nodeUrl','keywordFound','uid','parentNode','nodeList','urlList','nodeTitle','crawled','visited','level','error']
     
     def __init__(self, parent, uid, url, level):
         self.nodeUrl = url
@@ -13,11 +14,10 @@ class PageNode:
         self.parentNode = parent
         
         # Constructed nodes that are children of this node
-        # The value is 0 if the node was not visited, 1 if it was
-        self.nodeDict = dict()
+        self.nodeList = list()
         
         # Raw urls found from the crawler
-        self.urlList = [] 
+        self.urlList = list() 
 
         self.nodeTitle = "No title for node"
         self.crawled = False
@@ -47,11 +47,8 @@ class PageNode:
         self.crawled = status
 
     def setTitle(self, title):
-        # if the title is in unicode, we have to scrub it and convert to ascii
         titleString = ''
-        title = unicode(title)
-        scrubbed = unicodedata.normalize('NFKD', title).encode('ascii','ignore')
-        titleString = scrubbed
+        titleString = str(title)
         self.nodeTitle = titleString
 
     def getTitle(self):
@@ -77,7 +74,7 @@ class PageNode:
 
     def printUrls(self):
         for elem in self.urlList:
-            print elem
+            print(elem)
 
     def visitNode(self):
         self.visited = True
@@ -86,21 +83,15 @@ class PageNode:
     # Returns the first unvisited child node
     # NOTE: Must follow a call to hasUnvisited() to ensure there are unvisited children
     def getUnvisited(self):
-        vals = self.nodeDict.values()
-        keys = self.nodeDict.keys()
-        index =  -1
-        
-        key = None
+        if len(self.nodeList) >= 1:
+            return self.nodeList.pop()
+        else:
+            return None
 
-        index = vals.index(0) # get index of first unvisited 
-        key = keys[index]
-        self.nodeDict[key] = 1 #Set to 1 to mark as visited
-
-        return key # return the first unvisited node
 
     # Returns boolean indicating if the node has unvisited children
     def hasUnvisited(self):
-        vals = self.nodeDict.values()
+        vals = list(self.nodeDict.values())
         if vals.count(0) >= 1:
             return True
         else:

@@ -1,19 +1,22 @@
-from bs4 import BeautifulSoup as bs
-from urlparse import urlparse
-import requests
 import sys
+import asyncio
+from requests_html import HTMLSession, AsyncHTMLSession
+import requests
+from requests import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from webparser import WebParser
 from pagenode import PageNode
 import pdb
+from urllib.parse import urlparse
 
-DEBUG = True
+DEBUG = False
 
-class WebCrawler:
-    # Performs crawling of provided web address
+# Performs crawling of provided web address
+class WebCrawler(object):
 
+    __slots__ = ['parser','urls','keywordExists','keyword']
     def __init__ (self,keyword=None):
-        self.parser = WebParser()
-        self.urlDict = {}
+        self.urls = set()
 
         if keyword is None:
             self.keywordExists = False
@@ -21,18 +24,6 @@ class WebCrawler:
             self.keywordExists = True
             self.keyword = keyword
 
-    def __str__(self):
-        # return string representation of self
-
-        returnString = ''
-
-        if len(self.urlDict.items()) > 0:
-            for el in self.urlDict.keys():
-                returnString = str(el) + '\n' + returnString
-
-            return returnString
-        else:
-            return "urlDict is empty"
 
     # crawlTypes:
     #   0: full crawl (urls, title, keyword)
@@ -43,92 +34,229 @@ class WebCrawler:
     #   2: Error opening URL
     def crawl(self, page, crawlType):
 
-        # Check if nodeUrl has a valid scheme (http / https). If not, pre-pend http scheme to it
-        parsedUrl = urlparse(page.nodeUrl)
+        resp = self._fetch(page.nodeUrl)
 
-        # if a scheme was not found / recognized
-        if parsedUrl.scheme == '':
-            # First check if it is a scheme agnostic link
-            if page.nodeUrl[:2] == '//':
-                # If it is, prepend http: and proceed
-                page.nodeUrl = 'http:' + page.nodeUrl
-            else:
-                # Otherwise, prepend with // and proceed
-                page.nodeUrl = 'http://' + page.nodeUrl
-        elif parsedUrl.scheme != 'http' and parsedUrl.scheme != 'https':
-            page.setTitle("Invalid scheme detected. Please use http or https.")
-            page.setError(parsedUrl.scheme + " is not a valid scheme. Please use http or https.")
+        # response of 2 means error occurred
+        if type(resp) is str or resp is None:
+            return 2
+
+        try:
+            self._parsePage(page,resp,crawlType)
+        except AttributeError:
+            e = sys.exc_info()
+            page.setError(str(e[1]))
+            return 2
+        except KeyboardInterrupt:
+            sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
+            sys.exit(1)               
+        except:
+            pdb.set_trace()
+            e = sys.exc_info()
+            sys.stderr.write(str(e[0]) + " " + str(e[1]))
+            page.setError(str(e[0]))
             return 2
         
-        fetched = self._fetch(page.nodeUrl)
-        loadedUrl = fetched[1]
-        theSoup = fetched[0]
-        
-        # if we got a string back, there was an error fetching
-        # return code 2 (error)
-        if type(theSoup) == str:
-            page.setTitle("Invalid, broken, or otherwise unreachable URL")
-            page.setError(theSoup)
-            return 2
-        
-        # if DEBUG:
-        #     print self.parser.getPageTitle(theSoup)
-        page.setTitle(self.parser.getPageTitle(theSoup))
-        page.setCrawledStatus(True)
-        
-        if crawlType == 0:
-            # Parse the URLs from gathered soup
-            self.urlDict = self.parser.parseUrls(theSoup, loadedUrl)
-            # Check if any urls were parsed
-            if len(self.urlDict.keys()) > 0:
-                # If they were, pass parsed urls to the pageNode's urlList
-                page.urlList = self.urlDict.keys()        
-        
-        # If a keyword exists, look for the keyword in text. Returns True if found
-        if self.keywordExists:
-            status = self.parser.parseKeyword(theSoup, self.keyword)
-
-            # If keyword is found, return code 1 (keyword found)
-            if status == True:  
-                return 1
-            # Otherwise return code 0 (normal return)
-            else:
-                return 0
-        else:  
+        # If keyword is found, return code 1 (keyword found)
+        if page.getKeywordStatus():
+            return 1
+        else:
             return 0
 
-    # fetch the web page and pull all href elements / build urls
-    # returns tuple of (bs4 object, url loaded). url loaded is returned to ensure we use the possibly redirected url
-    #   or a string in the even an exception occurred accessing the url
-    def _fetch(self, urlString):
-        # flesh out
-        url = urlString
-        followed = None
-        
-        try:
-            response = requests.get(url, timeout=3)
-            if response.status_code == requests.codes.ok:
-                html = response.content
-                followed = response.url             
-            else:
-                response.raise_for_status()
-        except:
-            e = sys.exc_info()
-            sys.stderr.write("Error " + str(e[0]) + ": " + str(e[1]))
+    # Perform HTML get request on the provided urlString
+    # and returning the response object
+    def _fetch(self,urlString):
 
-            return("Error: " + str(e[1]), followed)
-        return (bs(html,'lxml'),followed)
+        returnObj = None
+        retry = True
+        fixAttempted = False
 
-        
-    def _parseForUrls(self, soup, urlString):
-        temp = self.parser.parseUrls(soup,urlString)
-        self.urlDict = temp
-        if len(self.urlDict.keys()) <= 0:
-            return False 
+        while(retry):
+            try:
+                session = HTMLSession()
+                response = session.get(urlString, timeout=4, stream=False, verify=False)
+
+                if response.status_code == requests.codes.ok:
+                    html = response.html
+                else:
+                    html = None
+                    response.raise_for_status()
+                returnObj = response
+                retry = False
+            except requests.exceptions.MissingSchema:
+                if fixAttempted:
+                    retry = False
+                else:
+                    urlString = 'http://' + urlString
+                    fixAttempted = True
+                    retry = True
+                continue
+            except (requests.HTTPError, requests.ConnectionError, requests.ReadTimeout):
+                e = sys.exc_info()
+                eText = str(e[1])
+                returnObj = eText
+                retry = False
+            except KeyboardInterrupt:
+                sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
+                sys.exit(1)               
+            except:
+                e = sys.exc_info()
+                sys.stderr.write(str(e[1]))
+                returnObj = str(e[1])
+            finally:
+                if not retry:
+                    return returnObj
+
+    # Crawls the provided list of nodes using the provided crawl type. 
+    # crawlTypes:
+    #   0: full crawl (urls, title, keyword)
+    #   1: fast crawl (title, keyword)      
+    def crawlPool(self, nodeList, crawlType):
+
+        # Get the active event loop
+        loop = asyncio.get_event_loop()
+
+        # If it closed, create and assign a new loop
+        if loop.is_closed():
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            loop = asyncio.get_event_loop()
+
+        # obtain the pool of tasks
+        taskPool = self._fetchPool(nodeList)
+
+        # have the loop run until all tasks are complete
+        responsePool = loop.run_until_complete(taskPool)
+        taskPool = None
+        loop.close()
+
+        # Ensure we have a response for each node
+        if len(responsePool) != len(nodeList):
+            sys.stderr.write("Response/Page mismatch - the number of responses does not equal the number of pages\n")
         else:
-            return True
+            # assign responses as the value for each node key
+            if DEBUG:
+                print("Parsing pool...")
+
+            # Flag to indicate if keyword was hit and then return proper code
+            keywordHit = False
+            
+            # Loop over nodes and parse each
+            for i in range(len(nodeList)):
+                if type(responsePool[i]) is str:
+                    nodeList[i].setError(responsePool[i])
+                else:
+                    self._parsePage(nodeList[i],responsePool[i],crawlType)
+                if nodeList[i].getKeywordStatus():
+                    keywordHit = True
+                    break
+
+                # Remove reference to response to enable it to be freed
+                responsePool[i] = None
         
+            responsePool = None
+
+        if keywordHit:
+            return 2
+        else:
+            return 0       
+        
+    # Creates, gathers, and returns a set of asyncio tasks that will asynchronously fetche all pages in the nodePool 
+    # nodePool: dictionary with pagenodes as keys, returns with requests html responses as values. 
+    async def _fetchPool(self, nodePool):
+        if DEBUG:
+            print("Fetching pool...")
+
+        # The function comprising the asyncio tasks
+        async def fetch(self,url):
+            try:
+                response = await session.get(url,timeout=5, stream=True,verify=False)
+                if response.status_code != requests.codes.ok:
+                    response.raise_for_status()
+                else:
+                    # Good response, so return the html
+                    return response
+            # If schema is missing, retry after prepending http
+            except requests.exceptions.MissingSchema:
+                url = 'http://' + url
+                return await fetch(self,url)
+            except (requests.HTTPError, requests.ConnectionError, requests.ReadTimeout):
+                e = sys.exc_info()
+                eText = str(e[1])
+                return eText                
+            except KeyboardInterrupt:
+                sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
+                sys.exit(1)               
+            except:
+                e = sys.exc_info()
+                return (str(e[1]) + "\n")
+
+        # Create async session for performing requests
+        session = AsyncHTMLSession()
+
+        # Use a semaphore to limit to 10 simultaneous calls
+        semaphore = asyncio.BoundedSemaphore(10)
+
+        tasks = []
+
+        
+        # Builds the task for each node
+        # await the semaphore so no more that 10 calls happen at once
+        for node in nodePool:
+            await semaphore.acquire()
+            f = asyncio.ensure_future(fetch(self,node.nodeUrl))
+            f.add_done_callback(lambda f: semaphore.release())
+            tasks.append(f)
+
+        taskPool = await asyncio.gather(*tasks, return_exceptions=True)
+        #await session.close()
+        tasks = None
+        return taskPool
 
 
-    
+    # parseTypes:
+    #   0: full crawl (urls, title, keyword)
+    #   1: fast crawl (title, keyword)    
+    def _parsePage(self,node,resp,parseType):
+        try:
+            # If the response was a string, there was an exception
+            # and the exception text is assigned as the node title
+            if type(resp) == str or resp == None:
+                if resp is None:
+                    node.setTitle("Invalid, broken, or otherwise unreachable URL")
+                else:
+                    node.setTitle(resp)
+                return resp
+            else:
+                html = resp.html
+             
+            # If parseType is zero we are interested in the URLs
+            # otherwise just the title and keywords
+            if parseType == 0:
+                node.urlList = WebParser.parseUrls(html)
 
+            # Parse and assign page title
+            title = WebParser.getPageTitle(html)
+            node.setTitle(title)
+            
+            # If a keyword exists, parse for it
+            if self.keywordExists:
+                    keywordStatus = WebParser.parseKeyword(html, self.keyword)
+                    node.setKeywordStatus(keywordStatus)
+            
+            node.setCrawledStatus(True)
+
+            # Cleanup
+            del(resp)
+            resp = None
+
+            return 0
+
+        except KeyboardInterrupt:
+            sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
+            sys.exit(1)               
+        except:
+            pdb.set_trace()
+            e = sys.exc_info()
+            sys.stderr.write("In parse page: "+ str(e[1]))
+            node.setError(str(e[0]))
+            node.setCrawledStatus(True)
+            return 1
