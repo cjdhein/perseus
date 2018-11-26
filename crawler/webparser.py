@@ -1,5 +1,6 @@
-import sys
+import sys, traceback
 import requests_html
+import urllib.parse as uparse
 import pdb
 import re
 
@@ -48,10 +49,9 @@ class WebParser(object):
     # Args:     html - a Requests-HTTP representation of the HTML content fetched from the url
     # Returns:  a set containing each unique absolute link found in the html
     def parseUrls(html):
-
         try:
             allLinks = list(html.absolute_links)
-            scrubbedlinks = WebParser._scrubExtensions(allLinks)
+            scrubbedlinks = WebParser._scrubExtensions(allLinks, html.url)
             return scrubbedlinks
         except UnicodeDecodeError:
             raise
@@ -61,11 +61,19 @@ class WebParser(object):
             sys.exit(1)
 
     # Remove all links that end in invalid extensions
-    def _scrubExtensions(links):
+    def _scrubExtensions(links, baseUrl):
         scrubbed = list()
         preLen = len(links)
         while len(links) >= 1:
             link = links.pop()
+
+            # split url and check if it is absolute
+            parsed = uparse.urlsplit(link)
+            if parsed.netloc == '':
+                #if the netloc is missing, join it with our baseUrl
+                newUrl = uparse.urljoin(baseUrl,link)
+                link = newUrl
+            
             match = re.search(r".*(?:jpe?g|png|svg|gif|bmp|exe|pdf|zip)$",link)
             if match is None:
                 scrubbed.append(link)
