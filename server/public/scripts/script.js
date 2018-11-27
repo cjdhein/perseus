@@ -90,9 +90,6 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 
 		$http.post(url, $scope.data)
 			.success(function(response, status){
-				$scope.data = {
-					search: "dfs"
-				};
 				document.getElementById("error").display = "none";
 
 				graphData.reset();
@@ -101,6 +98,10 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 					$location.path('/graph');
 					$route.reload();
 				}
+
+				$scope.data = {
+					search: "dfs"
+				};
 			}).
 			error(function(data, status){
 				document.getElementById("errorText").innerHTML = "Request failed. Please try again.";
