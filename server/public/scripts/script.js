@@ -411,6 +411,19 @@ crawlerApp.controller('historyController', function($scope, $cookieStore, $http,
 	var saveData = function(text) {
 		var parser = new DOMParser();
 		var xml = parser.parseFromString(text, 'application/xml');
+
+		var error = xml.getElementsByTagName('error');
+		if(error.length > 0) {
+			for(var i = 0; i < error[0].children.length; ++i) {
+				if(error[0].children[i].nodeName == 'text') {
+					document.getElementById("errorText").innerHTML = error[0].children[i].innerHTML;
+					document.getElementById("error").style.display = "block";
+
+					return false;
+				}
+			}
+		}
+
 		var pages = xml.getElementsByTagName('page');
 
 		var idToLevel = {};
@@ -461,7 +474,12 @@ crawlerApp.controller('historyController', function($scope, $cookieStore, $http,
 				}
 				else if(nodes[j].nodeName == 'title') {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
-					newNode['label'] = nodes[j].innerHTML;
+					if(nodes[j].innerHTML.length > 10) {
+						newNode['label'] = nodes[j].innerHTML.substring(0,7) + "...";
+					}
+					else {
+						newNode['label'] = nodes[j].innerHTML;
+					}
 				}
 				else {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
@@ -488,6 +506,8 @@ crawlerApp.controller('historyController', function($scope, $cookieStore, $http,
 			nodes[i]["level"] = newLevel;
 			graphData.replace(nodes[i], i);
 		}
+
+		return true;
 	};
 });
 
