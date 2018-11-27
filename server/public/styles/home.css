@@ -52,6 +52,12 @@ body {
 	display: none;
 }
 
+#progress {
+	text-align: center;
+	margin: 2% 10% 2% 10%;
+	display: none;
+}
+
 .centered {
 	text-align: center;
 }

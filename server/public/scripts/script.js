@@ -8,8 +8,7 @@ crawlerApp.config(function($routeProvider) {
 
 	// route for the home page
 	.when('/', {
-		templateUrl : './../html/history.html',
-		controller  : 'historyController'
+		templateUrl : './../html/about.html',
 	})
 
 	// route for the graph page
@@ -20,14 +19,12 @@ crawlerApp.config(function($routeProvider) {
 
 	.when('/about', {
 		templateUrl : './../html/about.html'//,
-		//controller  : 'graphController'
 	})
 
-	// route for the history page
-	// .when('/history', {
-	// 	templateUrl : './../html/history.html',
-	// 	controller  : 'historyController'
-	// });
+	.when('/history', {
+		templateUrl : './../html/history.html',
+		controller  : 'historyController'
+	});
 });
 
 crawlerApp.factory('graphData', function() {
@@ -87,6 +84,8 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 
 	//TODO: Send request to server to retrieve graph from search terms
 	$scope.submit = function(){
+		document.getElementById("progress").style.display = "block";
+
 		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit || !Number.isInteger($scope.data.limit)) {
 			return;
 		}
@@ -95,7 +94,8 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 
 		$http.post(url, $scope.data)
 			.success(function(response, status){
-				document.getElementById("error").display = "none";
+				document.getElementById("error").style.display = "none";
+				document.getElementById("progress").style.display = "none";
 
 				graphData.reset();
 				if(saveData(response)) {
@@ -109,6 +109,7 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 				};
 			}).
 			error(function(data, status){
+				document.getElementById("progress").style.display = "none";
 				document.getElementById("errorText").innerHTML = "Request failed. Please try again.";
 				document.getElementById("error").style.display = "block";
 			});
@@ -233,7 +234,7 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 	};
 
 	$scope.history = function(){
-		$location.path('/');
+		$location.path('/history');
 	};
 
 	$scope.about = function(){
