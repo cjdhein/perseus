@@ -95,26 +95,40 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 
 		$http.post(url, $scope.data)
 			.success(function(response, status){
-				graphData.reset();
-				saveData(response);
-				addCookie($scope.data);
-
 				$scope.data = {
 					search: "dfs"
 				};
+				document.getElementById("error").display = "none";
 
-				$location.path('/graph');
-				$route.reload();
+				graphData.reset();
+				if(saveData(response)) {
+					addCookie($scope.data);
+					$location.path('/graph');
+					$route.reload();
+				}
 			}).
 			error(function(data, status){
-				//error message
-				console.log("error");
+				document.getElementById("errorText").innerHTML = "Request failed. Please try again.";
+				document.getElementById("error").style.display = "block";
 			});
 	};
 
 	var saveData = function(text) {
 		var parser = new DOMParser();
 		var xml = parser.parseFromString(text, 'application/xml');
+
+		var error = xml.getElementsByTagName('error');
+		if(error.length > 0) {
+			for(var i = 0; i < error[0].children.length; ++i) {
+				if(error[0].children[i].nodeName == 'text') {
+					document.getElementById("errorText").innerHTML = error[0].children[i].innerHTML;
+					document.getElementById("error").style.display = "block";
+
+					return false;
+				}
+			}
+		}
+
 		var pages = xml.getElementsByTagName('page');
 
 		var idToLevel = {};
@@ -165,7 +179,12 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 				}
 				else if(nodes[j].nodeName == 'title') {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
-					newNode['label'] = nodes[j].innerHTML;
+					if(nodes[j].innerHTML.length > 10) {
+						newNode['label'] = nodes[j].innerHTML.substring(0,7) + "...";
+					}
+					else {
+						newNode['label'] = nodes[j].innerHTML;
+					}
 				}
 				else {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
@@ -178,10 +197,10 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 		var levelRank = {};
 		for(var i = 0; i < Object.keys(numPerLevel).length; i++) {
 			if (i == 0) {
-				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10);
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5);
 			}
 			else {
-				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10) + levelRank[i];
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5) + levelRank[i];
 			}
 		}
 
@@ -192,6 +211,8 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 			nodes[i]["level"] = newLevel;
 			graphData.replace(nodes[i], i);
 		}
+
+		return true;
 	};
 
 	var addCookie = function(data) {
@@ -243,11 +264,10 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 	$scope.history = function(){
 		$location.path('/');
 	};
-
+	
 	$scope.about = function(){
 		$location.path('/about');
 	};
-
 });
 
 crawlerApp.controller('graphController', function($scope, graphData) {
@@ -275,8 +295,6 @@ crawlerApp.controller('graphController', function($scope, graphData) {
         	hierarchical: {
             	enabled: true,
             	direction: "LR",
-            	levelSeparation: 500,
-            	nodeSpacing: 150
             	//sortMethod: "directed"
         	}
     	},
@@ -315,6 +333,15 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 					document.getElementById("kKeyword").innerHTML = "Contains keyword";
 					document.getElementById("kLink").href = graph.nodes[nodeID]['url'];
 					document.getElementById("popupKeyword").style.display = "block";
+
+					var fontSize = 50;
+					while(document.getElementById("popupKeyword").clientHeight < document.getElementById("popupKeyword").scrollHeight || document.getElementById("popupKeyword").clientWidth < document.getElementById("popupKeyword").scrollWidth) {
+						console.log(fontSize);
+						fontSize -= 2;
+						document.getElementById("kTitle").style.fontSize = fontSize + "pt";
+					}
+
+					console.log(document.getElementById("popupKeyword").clientHeight + ' ' + document.getElementById("popupKeyword").scrollHeight);
 				}
 				else {
 					document.getElementById("popupKeyword").style.display = "none";
@@ -322,6 +349,15 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 					document.getElementById("dKeyword").innerHTML = "Doesn't contain keyword";
 					document.getElementById("dLink").href = graph.nodes[nodeID]['url'];
 					document.getElementById("popupDefault").style.display = "block";
+
+					var fontSize = 50;
+					while(document.getElementById("popupDefault").clientHeight < document.getElementById("popupDefault").scrollHeight || document.getElementById("popupDefault").clientWidth < document.getElementById("popupDefault").scrollWidth) {
+						console.log(fontSize);
+						fontSize -= 2;
+						document.getElementById("dTitle").style.fontSize = fontSize + "pt";
+					}
+
+					console.log(document.getElementById("popupDefault").clientHeight + ' ' + document.getElementById("popupDefault").scrollHeight);
 				}
 			}, 1000);
 		}
@@ -343,7 +379,7 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 	});
 });
 
-crawlerApp.controller('historyController', function($scope, $cookieStore, $location) {
+crawlerApp.controller('historyController', function($scope, $cookieStore, $http, $location, graphData, $route) {
 	var historyArr = [];
 	var cookieData = $cookieStore.get('graphCrawlerHistoryData');
 	var start = cookieData['start'];
@@ -351,21 +387,182 @@ crawlerApp.controller('historyController', function($scope, $cookieStore, $locat
 	var cookie = $cookieStore.get('graphCrawlerHistory');
 
 	for(var i = 0; i < size; ++i) {
-		historyArr.push(cookie[(start+i)%10]);
+		var ind = (start+i)%10;
+		historyArr.push(cookie[ind]);
 	}
 
 	$scope.hist = historyArr.reverse();
 
+	for(var i = 0; i < size; ++i) {
+		$scope.hist[i]["id"] = i;
+	}
+
+	console.log($scope.hist);
+
 	$scope.view = function(id){
-		console.log(id);
-		//Send request to server
-		//update graph
-		//$location.path('/graph');
+		var url = "/post";
+		console.log($scope.hist[id]);
+		$http.post(url, $scope.hist[id])
+			.success(function(response, status){
+				graphData.reset();
+				saveData(response);
+
+				$location.path('/graph');
+				$route.reload();
+			}).
+			error(function(data, status){
+				//error message
+				console.log("error");
+			});
 	};
 
 	$scope.search = function() {
 		$location.path('/');
 	};
+
+	var saveData = function(text) {
+		var parser = new DOMParser();
+		var xml = parser.parseFromString(text, 'application/xml');
+
+		var error = xml.getElementsByTagName('error');
+		if(error.length > 0) {
+			for(var i = 0; i < error[0].children.length; ++i) {
+				if(error[0].children[i].nodeName == 'text') {
+					document.getElementById("errorText").innerHTML = error[0].children[i].innerHTML;
+					document.getElementById("error").style.display = "block";
+
+					return false;
+				}
+			}
+		}
+
+		var pages = xml.getElementsByTagName('page');
+
+		var idToLevel = {};
+
+		var numPerLevel = {};
+
+		for(var i = 0; i < pages.length; ++i) {
+			var nodes = pages[i].children;
+			var newNode = {
+				keyword: false
+			};
+
+			if(i == 0) {
+				newNode["level"] = 1;
+				idToLevel[0] = 1;
+				numPerLevel[1] = 1;
+			}
+
+			for(var j = 0; j < nodes.length; ++j) {
+				if(nodes[j].nodeName == 'parent_id') {
+					graphData.addEdge(i, nodes[j].innerHTML);
+
+					var n = idToLevel[nodes[j].innerHTML] + 1;
+
+					idToLevel[i] = idToLevel[nodes[j].innerHTML] + 1;
+					newNode["level"] = idToLevel[nodes[j].innerHTML] + 1; 
+					if(n in numPerLevel) {
+						numPerLevel[n] = numPerLevel[n] + 1;
+					}
+					else {
+						numPerLevel[n] = 1;
+					}
+				}
+				else if(nodes[j].nodeName == 'keyword') {
+					newNode['keyword'] = true;
+					newNode['color'] = {
+						background: keywordColor,
+						border: "#c60d0d",
+						highlight: {
+							background: keywordColor,
+							border: "#c60d0d"
+						},
+						hover: {
+							border: "#c60d0d",
+							background: "#ffaaaa"
+						}
+					};
+				}
+				else if(nodes[j].nodeName == 'title') {
+					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
+					if(nodes[j].innerHTML.length > 10) {
+						newNode['label'] = nodes[j].innerHTML.substring(0,7) + "...";
+					}
+					else {
+						newNode['label'] = nodes[j].innerHTML;
+					}
+				}
+				else {
+					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
+				}
+			}
+
+			graphData.addNode(newNode);
+		}
+
+		var levelRank = {};
+		for(var i = 0; i < Object.keys(numPerLevel).length; i++) {
+			if (i == 0) {
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5);
+			}
+			else {
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5) + levelRank[i];
+			}
+		}
+
+		var nodes = graphData.getGraph().nodes;
+		console.log(nodes);
+		for(var i = 0; i < nodes.length; i++) {
+			var newLevel = levelRank[idToLevel[nodes[i].id]];
+			nodes[i]["level"] = newLevel;
+			graphData.replace(nodes[i], i);
+		}
+
+		return true;
+	};
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
