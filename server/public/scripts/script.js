@@ -174,7 +174,12 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 				}
 				else if(nodes[j].nodeName == 'title') {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
-					newNode['label'] = nodes[j].innerHTML;
+					if(nodes[j].innerHTML.length > 10) {
+						newNode['label'] = nodes[j].innerHTML.substring(0,7) + "...";
+					}
+					else {
+						newNode['label'] = nodes[j].innerHTML;
+					}
 				}
 				else {
 					newNode[nodes[j].nodeName] = nodes[j].innerHTML;
@@ -187,10 +192,10 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 		var levelRank = {};
 		for(var i = 0; i < Object.keys(numPerLevel).length; i++) {
 			if (i == 0) {
-				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10);
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5);
 			}
 			else {
-				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10) + levelRank[i];
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5) + levelRank[i];
 			}
 		}
 
@@ -316,6 +321,15 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 					document.getElementById("kKeyword").innerHTML = "Contains keyword";
 					document.getElementById("kLink").href = graph.nodes[nodeID]['url'];
 					document.getElementById("popupKeyword").style.display = "block";
+
+					var fontSize = 50;
+					while(document.getElementById("popupKeyword").clientHeight < document.getElementById("popupKeyword").scrollHeight || document.getElementById("popupKeyword").clientWidth < document.getElementById("popupKeyword").scrollWidth) {
+						console.log(fontSize);
+						fontSize -= 2;
+						document.getElementById("kTitle").style.fontSize = fontSize + "pt";
+					}
+
+					console.log(document.getElementById("popupKeyword").clientHeight + ' ' + document.getElementById("popupKeyword").scrollHeight);
 				}
 				else {
 					document.getElementById("popupKeyword").style.display = "none";
@@ -323,6 +337,15 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 					document.getElementById("dKeyword").innerHTML = "Doesn't contain keyword";
 					document.getElementById("dLink").href = graph.nodes[nodeID]['url'];
 					document.getElementById("popupDefault").style.display = "block";
+
+					var fontSize = 50;
+					while(document.getElementById("popupDefault").clientHeight < document.getElementById("popupDefault").scrollHeight || document.getElementById("popupDefault").clientWidth < document.getElementById("popupDefault").scrollWidth) {
+						console.log(fontSize);
+						fontSize -= 2;
+						document.getElementById("dTitle").style.fontSize = fontSize + "pt";
+					}
+
+					console.log(document.getElementById("popupDefault").clientHeight + ' ' + document.getElementById("popupDefault").scrollHeight);
 				}
 			}, 1000);
 		}
@@ -451,10 +474,10 @@ crawlerApp.controller('historyController', function($scope, $cookieStore, $http,
 		var levelRank = {};
 		for(var i = 0; i < Object.keys(numPerLevel).length; i++) {
 			if (i == 0) {
-				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10);
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5);
 			}
 			else {
-				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 10) + levelRank[i];
+				levelRank[i+1] = Math.ceil(numPerLevel[i+1] / 5) + levelRank[i];
 			}
 		}
 

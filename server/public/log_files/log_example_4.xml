@@ -4,21 +4,21 @@
 <crawler_log>
 	<page>
 		<id>0</id>
-		<title>Google</title>
+		<title>Google and this is some super duper long title</title>
 		<url>https://www.google.com/</url>
 		<keyword />
 	</page>
 
 	<page>
 		<id>1</id>
-		<title>Google</title>
+		<title>Goooooogle</title>
 		<url>https://www.google.com/</url>
 		<parent_id>0</parent_id>
 	</page>
 
 	<page>
 		<id>2</id>
-		<title>Google</title>
+		<title>Goooooo...</title>
 		<url>https://www.google.com/</url>
 		<parent_id>0</parent_id>
 	</page>
