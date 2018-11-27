@@ -64,6 +64,14 @@ body {
 	padding-bottom: 20%;
 }
 
+.footer2 {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding-bottom: 15%;
+}
+
 #mynetwork {
 	/*position: absolute;
 	left: 30%;

@@ -18,6 +18,11 @@ crawlerApp.config(function($routeProvider) {
 		controller  : 'graphController'
 	})
 
+	.when('/about', {
+		templateUrl : './../html/about.html'//,
+		//controller  : 'graphController'
+	})
+
 	// route for the history page
 	// .when('/history', {
 	// 	templateUrl : './../html/history.html',
@@ -230,6 +235,10 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 	$scope.history = function(){
 		$location.path('/');
 	};
+
+	$scope.about = function(){
+		$location.path('/about');
+	};
 });
 
 // create the controller and inject Angular's $scope
@@ -256,7 +265,10 @@ crawlerApp.controller('homeController', function($scope, $cookieStore, $http, $l
 	$scope.history = function(){
 		$location.path('/');
 	};
-
+	
+	$scope.about = function(){
+		$location.path('/about');
+	};
 });
 
 crawlerApp.controller('graphController', function($scope, graphData) {
