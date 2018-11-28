@@ -321,14 +321,17 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 			network.focus(nodeID, {
 				scale: 1.0,
 				animation: true
-			}, 1000);
+			}, 500);
 
 			setTimeout(function(){
-				if(graph.nodes[nodeID]['keyword']) {
+				for(var i = 0; i < graph.nodes.length; ++i) {
+				var node = graph.nodes[i];
+				if(node['id'] == nodeID){
+				if(node['keyword']) {
 					document.getElementById("popupDefault").style.display = "none";
-					document.getElementById("kTitle").innerHTML = graph.nodes[nodeID]['title'];
+					document.getElementById("kTitle").innerHTML = node['title'];
 					document.getElementById("kKeyword").innerHTML = "Contains keyword";
-					document.getElementById("kLink").href = graph.nodes[nodeID]['url'];
+					document.getElementById("kLink").href = node['url'];
 					document.getElementById("popupKeyword").style.display = "block";
 
 					var fontSize = 50;
@@ -342,9 +345,9 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 				}
 				else {
 					document.getElementById("popupKeyword").style.display = "none";
-					document.getElementById("dTitle").innerHTML = graph.nodes[nodeID]['title'];
+					document.getElementById("dTitle").innerHTML = node['title'];
 					document.getElementById("dKeyword").innerHTML = "Doesn't contain keyword";
-					document.getElementById("dLink").href = graph.nodes[nodeID]['url'];
+					document.getElementById("dLink").href = node['url'];
 					document.getElementById("popupDefault").style.display = "block";
 
 					var fontSize = 50;
@@ -356,7 +359,9 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 
 					console.log(document.getElementById("popupDefault").clientHeight + ' ' + document.getElementById("popupDefault").scrollHeight);
 				}
-			}, 1000);
+				}
+				}	
+			}, 750);
 		}
 		else {
 			document.getElementById('popupKeyword').style.display = "none";
@@ -405,7 +410,7 @@ crawlerApp.controller('historyController', function($scope, $cookieStore, $http,
 			.success(function(response, status){
 				document.getElementById("error").style.display = "none";
 				document.getElementById("progress").style.display = "none";
-				
+
 				graphData.reset();
 				saveData(response);
 
