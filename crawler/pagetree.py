@@ -26,7 +26,7 @@ class PageTree:
             self.keyword = keyword
 
         self.searchType = searchType
-        self.currentLevel = 1
+        self.currentLevel = 0
         self.webCrawler = WebCrawler(keyword)
         self.idCount = -1
         # 0 represents root level
@@ -67,6 +67,7 @@ class PageTree:
         # Loop while we have not hit the limit and the keyword status is false
         while self.currentLevel <= self.limit+1:
             aNode = self.activeNode
+            self.currentLevel = aNode.level + 1
             
             # if the active node has not been crawled
             if aNode.nodeUrl not in self.crawled:
@@ -116,13 +117,12 @@ class PageTree:
 
                 # get newId and construct the new node
                 newId = self.getUID()
-                newNode = PageNode(aNode, newId, newUrl, self.currentLevel)
+                newNode = PageNode(aNode, newId, newUrl, aNode.level + 1)
 
                 # Add new node to current node's connections, setting it to 0 to indicate it hasn't been visited
                 aNode.nodeList.append(newNode)
 
                 # Set a new active node, and go down a level
-                self.currentLevel += 1
                 self.activeNode = newNode
 
             # No URLs available

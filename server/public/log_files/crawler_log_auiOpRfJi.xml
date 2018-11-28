@@ -1,0 +1,148 @@
+<crawler_log>
+  <page>
+    <id>0</id>
+    <level>0</level>
+    <url>https://unitedbyblue.com/</url>
+    <title>United By Blue, Sustainable Outdoor Apparel and Accessories</title>
+  </page>
+  <page>
+    <id>1</id>
+    <level>1</level>
+    <url>https://unitedbyblue.com/products/summit-convertible-tote-pack?variant=36520443588</url>
+    <title>Summit Convertible Tote Pack | United By Blue</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>2</id>
+    <level>2</level>
+    <url>https://unitedbyblue.com/collections/westray/products/womens-danner-ridge-boot</url>
+    <title>Women's Danner Ridge Boot | United By Blue</title>
+    <parent_id>1</parent_id>
+  </page>
+  <page>
+    <id>3</id>
+    <level>3</level>
+    <url>https://unitedbyblue.com/blogs/workshops-and-events</url>
+    <title>Events - United By Blue</title>
+    <parent_id>2</parent_id>
+  </page>
+  <page>
+    <id>4</id>
+    <level>4</level>
+    <url>https://unitedbyblue.com/apps/help-center</url>
+    <title>United By Blue</title>
+    <parent_id>3</parent_id>
+  </page>
+  <page>
+    <id>5</id>
+    <level>5</level>
+    <url>https://unitedbyblue.com/collections/kids-bags</url>
+    <title>Kids' Bags - United By Blue</title>
+    <parent_id>4</parent_id>
+  </page>
+  <page>
+    <id>6</id>
+    <level>6</level>
+    <url>https://unitedbyblue.com/collections/sweaters-sweatshirts</url>
+    <title>Women's Organic Cotton Sweatshirts + Eco-Friendly Sweaters - United By Blue</title>
+    <parent_id>5</parent_id>
+  </page>
+  <page>
+    <id>7</id>
+    <level>7</level>
+    <url>https://unitedbyblue.com/collections/sweaters-sweatshirts/products/himley-waffle-sweater?variant=12539396456520</url>
+    <title>Himley Waffle Sweater | United By Blue</title>
+    <parent_id>6</parent_id>
+  </page>
+  <page>
+    <id>8</id>
+    <level>8</level>
+    <url>https://unitedbyblue.com/collections/mens-pants</url>
+    <title>Men's Pants - United By Blue</title>
+    <parent_id>7</parent_id>
+  </page>
+  <page>
+    <id>9</id>
+    <level>9</level>
+    <url>https://unitedbyblue.com/collections/mens-pants/products/field-corduroy?variant=12510119198792</url>
+    <title>Field Corduroy | United By Blue</title>
+    <parent_id>8</parent_id>
+  </page>
+  <page>
+    <id>10</id>
+    <level>10</level>
+    <url>https://unitedbyblue.com/products/e-gift-card</url>
+    <title>Online Gift Card | United By Blue</title>
+    <parent_id>9</parent_id>
+  </page>
+  <page>
+    <id>11</id>
+    <level>11</level>
+    <url>https://unitedbyblue.com/collections/womens-outerwear</url>
+    <title>Women's Outerwear - United By Blue</title>
+    <parent_id>10</parent_id>
+  </page>
+  <page>
+    <id>12</id>
+    <level>12</level>
+    <url>https://unitedbyblue.com/collections/enamel-mugs-tumblers</url>
+    <title>Enamel Mugs, Camp Mugs + Enamel Tumblers - United By Blue</title>
+    <parent_id>11</parent_id>
+  </page>
+  <page>
+    <id>13</id>
+    <level>13</level>
+    <url>https://unitedbyblue.com/search</url>
+    <title>Search - United By Blue</title>
+    <parent_id>12</parent_id>
+  </page>
+  <page>
+    <id>15</id>
+    <level>14</level>
+    <url>https://unitedbyblue.com/collections/belts-wallets</url>
+    <title>Belts + Wallets - United By Blue</title>
+    <parent_id>13</parent_id>
+  </page>
+  <page>
+    <id>16</id>
+    <level>15</level>
+    <url>https://unitedbyblue.com/collections/belts-wallets/products/bellroy-note-sleeve-wallet</url>
+    <title>Bellroy Note Sleeve Wallet | United By Blue</title>
+    <parent_id>15</parent_id>
+  </page>
+  <page>
+    <id>17</id>
+    <level>16</level>
+    <url>https://unitedbyblue.com/collections/last-call-kids</url>
+    <title>Kids' Last Call - United By Blue</title>
+    <parent_id>16</parent_id>
+  </page>
+  <page>
+    <id>18</id>
+    <level>17</level>
+    <url>https://unitedbyblue.com/collections/last-call-kids/products/boys-upstream-tank</url>
+    <title>Boys' Upstream Tank | United By Blue</title>
+    <parent_id>17</parent_id>
+  </page>
+  <page>
+    <id>19</id>
+    <level>18</level>
+    <url>https://unitedbyblue.com/collections/womens-t-shirts-tanks</url>
+    <title>Women's Organic Cotton T Shirts + Tank Tops - United By Blue</title>
+    <parent_id>18</parent_id>
+  </page>
+  <page>
+    <id>20</id>
+    <level>19</level>
+    <url>https://unitedbyblue.com/collections/gifts-for-the-traveler</url>
+    <title>Gifts For The Traveler - United By Blue</title>
+    <parent_id>19</parent_id>
+  </page>
+  <page>
+    <id>21</id>
+    <level>20</level>
+    <url>https://unitedbyblue.com/collections/gifts-for-the-traveler/products/sunski-singlefins?variant=1177021546500</url>
+    <title>Sunski Singlefins | United By Blue</title>
+    <parent_id>20</parent_id>
+  </page>
+</crawler_log>

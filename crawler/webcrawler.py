@@ -50,7 +50,8 @@ class WebCrawler(object):
             sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
             sys.exit(1)               
         except:
-            pdb.set_trace()
+            if DEBUG:
+                pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write(str(e[0]) + " " + str(e[1]))
             page.setError(str(e[0]))
@@ -254,7 +255,8 @@ class WebCrawler(object):
             sys.stderr.write("\nKeyboardInterrupt detected... exiting run.\n")
             sys.exit(1)               
         except:
-            pdb.set_trace()
+            if DEBUG:
+                pdb.set_trace()
             e = sys.exc_info()
             sys.stderr.write("In parse page: "+ str(e[1]))
             node.setError(str(e[0]))

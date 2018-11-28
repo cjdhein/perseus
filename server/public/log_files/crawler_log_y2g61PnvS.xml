@@ -1,0 +1,176 @@
+<crawler_log>
+  <page>
+    <id>0</id>
+    <level>0</level>
+    <url>https://en.wikipedia.org/wiki/Jesuit_Community_Cemetery</url>
+    <title>Jesuit Community Cemetery - Wikipedia</title>
+  </page>
+  <page>
+    <id>1</id>
+    <level>1</level>
+    <url>https://en.wikipedia.org/wiki/Special:MyContributions</url>
+    <title>User contributions for 2001:19F0:5:4A76:5400:1FF:FE70:BA44 - Wikipedia</title>
+    <parent_id>0</parent_id>
+  </page>
+  <page>
+    <id>2</id>
+    <level>2</level>
+    <url>https://en.wikipedia.org/wiki/Special:Contributions/2001:19F0:5:4A76:5400:1FF:FE70:BA44</url>
+    <title>User contributions for 2001:19F0:5:4A76:5400:1FF:FE70:BA44 - Wikipedia</title>
+    <parent_id>1</parent_id>
+  </page>
+  <page>
+    <id>3</id>
+    <level>3</level>
+    <url>https://en.wikipedia.org/wiki/Portal:Current_events</url>
+    <title>Portal:Current events - Wikipedia</title>
+    <parent_id>2</parent_id>
+  </page>
+  <page>
+    <id>4</id>
+    <level>4</level>
+    <url>https://en.wikipedia.org/wiki/Library_of_Congress_Classification</url>
+    <title>Library of Congress Classification - Wikipedia</title>
+    <parent_id>3</parent_id>
+  </page>
+  <page>
+    <id>5</id>
+    <level>5</level>
+    <url>https://en.wikipedia.org/wiki/Library_of_Congress_Classification#Class_E_-_American_History</url>
+    <title>Library of Congress Classification - Wikipedia</title>
+    <parent_id>4</parent_id>
+  </page>
+  <page>
+    <id>6</id>
+    <level>6</level>
+    <url>https://en.wikipedia.org/wiki/Uralic_language</url>
+    <title>Uralic languages - Wikipedia</title>
+    <parent_id>5</parent_id>
+  </page>
+  <page>
+    <id>7</id>
+    <level>7</level>
+    <url>https://www.worldcat.org/issn/1469-7742</url>
+    <title>Journal of linguistics : JL. (eJournal / eMagazine, 1965) [WorldCat.org]</title>
+    <parent_id>6</parent_id>
+  </page>
+  <page>
+    <id>9</id>
+    <level>8</level>
+    <url>http://bibliograph.net/PublicationSeries</url>
+    <title>PublicationSeries - BiblioGraph.net</title>
+    <parent_id>7</parent_id>
+  </page>
+  <page>
+    <id>14</id>
+    <level>9</level>
+    <url>http://bibliograph.net/AlignmentObject</url>
+    <title>AlignmentObject - BiblioGraph.net</title>
+    <parent_id>9</parent_id>
+  </page>
+  <page>
+    <id>13</id>
+    <level>9</level>
+    <url>http://bibliograph.net/headline</url>
+    <title>Page had no title</title>
+    <parent_id>9</parent_id>
+  </page>
+  <page>
+    <id>12</id>
+    <level>9</level>
+    <url>http://bibliograph.net/awards</url>
+    <title>Page had no title</title>
+    <parent_id>9</parent_id>
+  </page>
+  <page>
+    <id>11</id>
+    <level>9</level>
+    <url>http://bibliograph.net/video</url>
+    <title>Page had no title</title>
+    <parent_id>9</parent_id>
+  </page>
+  <page>
+    <id>10</id>
+    <level>9</level>
+    <url>http://bibliograph.net/associatedMedia</url>
+    <title>Page had no title</title>
+    <parent_id>9</parent_id>
+  </page>
+  <page>
+    <id>15</id>
+    <level>10</level>
+    <url>http://schema.org/ImageObject</url>
+    <title>ImageObject - schema.org</title>
+    <parent_id>14</parent_id>
+  </page>
+  <page>
+    <id>16</id>
+    <level>11</level>
+    <url>https://schema.org/timeRequired</url>
+    <title>timeRequired - schema.org</title>
+    <parent_id>15</parent_id>
+  </page>
+  <page>
+    <id>17</id>
+    <level>12</level>
+    <url>http://schema.org/timeRequired</url>
+    <title>timeRequired - schema.org</title>
+    <parent_id>16</parent_id>
+  </page>
+  <page>
+    <id>18</id>
+    <level>13</level>
+    <url>https://docs.google.com/a/google.com/forms/d/1krxHlWJAO3JgvHRZV9Rugkr9VYnMdrI10xbGsWt733c/viewform?entry.1174568178&amp;entry.41124795=http://schema.org/timeRequired&amp;entry.882602760=property</url>
+    <title>Schema.org quick feedback form (your comment may be public)</title>
+    <parent_id>17</parent_id>
+  </page>
+  <page>
+    <id>19</id>
+    <level>14</level>
+    <url>http://www.google.com/policies</url>
+    <title></title>
+    <parent_id>18</parent_id>
+  </page>
+  <page>
+    <id>20</id>
+    <level>15</level>
+    <url>https://policies.google.com/</url>
+    <title>Privacy &amp; Terms &#8211; Google</title>
+    <parent_id>19</parent_id>
+  </page>
+  <page>
+    <id>21</id>
+    <level>16</level>
+    <url>https://policies.google.com/privacy</url>
+    <title>Privacy Policy &#8211; Privacy &amp; Terms &#8211; Google</title>
+    <parent_id>20</parent_id>
+  </page>
+  <page>
+    <id>22</id>
+    <level>17</level>
+    <url>https://takeout.google.com/?utm_source=pp</url>
+    <title>Sign in - Google Accounts</title>
+    <parent_id>21</parent_id>
+  </page>
+  <page>
+    <id>23</id>
+    <level>18</level>
+    <url>https://support.google.com/accounts?p=signin_privatebrowsing&amp;hl=en</url>
+    <title>Sign in on a device that's not yours - Computer - Google Account Help</title>
+    <parent_id>22</parent_id>
+  </page>
+  <page>
+    <id>24</id>
+    <level>19</level>
+    <url>https://support.google.com/accounts/answer/7519408?hl=en&amp;ref_topic=7189123</url>
+    <title>Get stronger account security with Advanced Protection - Computer - Google Account Help</title>
+    <parent_id>23</parent_id>
+  </page>
+  <page>
+    <id>25</id>
+    <level>20</level>
+    <url>https://plus.google.com/?gpsrc=ogpy0</url>
+    <title>Discover - Google+</title>
+    <parent_id>24</parent_id>
+  </page>
+</crawler_log>
