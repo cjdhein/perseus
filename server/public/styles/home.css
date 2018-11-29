@@ -156,13 +156,19 @@ body {
 
 .popupContent p {
 	padding: 0;
+	margin: 0;
+	font-size: 8pt;
 }
 
 #kTitle, #dTitle {
 	margin: 0;
 	padding: 2% 0 2% 0;
 	font-weight: bolder;
-	font-size: 50pt;
+	font-size: 40pt;
+}
+
+#dLink, #kLink {
+	text-decoration: underline;
 }
 
 

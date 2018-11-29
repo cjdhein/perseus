@@ -85,6 +85,7 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 	//TODO: Send request to server to retrieve graph from search terms
 	$scope.submit = function(){
 		document.getElementById("progress").style.display = "block";
+		document.getElementById("error").style.display = "none";
 
 		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit || !Number.isInteger($scope.data.limit)) {
 			return;
@@ -334,8 +335,8 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 					document.getElementById("kLink").href = node['url'];
 					document.getElementById("popupKeyword").style.display = "block";
 
-					var fontSize = 50;
-					while(document.getElementById("popupKeyword").clientHeight < document.getElementById("popupKeyword").scrollHeight || document.getElementById("popupKeyword").clientWidth < document.getElementById("popupKeyword").scrollWidth) {
+					var fontSize = 40;
+					while(document.getElementById("popupKeyword").clientHeight < document.getElementById("popupKeyword").scrollHeight || document.getElementById("popupKeyword").clientWidth < document.getElementById("popupKeyword").scrollWidth || fontSize == 2) {
 						console.log(fontSize);
 						fontSize -= 2;
 						document.getElementById("kTitle").style.fontSize = fontSize + "pt";
@@ -350,8 +351,8 @@ crawlerApp.controller('graphController', function($scope, graphData) {
 					document.getElementById("dLink").href = node['url'];
 					document.getElementById("popupDefault").style.display = "block";
 
-					var fontSize = 50;
-					while(document.getElementById("popupDefault").clientHeight < document.getElementById("popupDefault").scrollHeight || document.getElementById("popupDefault").clientWidth < document.getElementById("popupDefault").scrollWidth) {
+					var fontSize = 40;
+					while(document.getElementById("popupDefault").clientHeight < document.getElementById("popupDefault").scrollHeight || document.getElementById("popupDefault").clientWidth < document.getElementById("popupDefault").scrollWidth || fontSize == 2) {
 						console.log(fontSize);
 						fontSize -= 2;
 						document.getElementById("dTitle").style.fontSize = fontSize + "pt";
