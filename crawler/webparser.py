@@ -38,10 +38,9 @@ class WebParser(object):
             else:
                 title = title[0].text
         except:
-            pdb.set_trace()
             e = sys.exc_info()
-            sys.stderr.write(str(e[1]))
-            exit(1)
+            #sys.stderr.write(str(e[1]))
+            title = str(e[1])
         return title
 
     # parseUrls

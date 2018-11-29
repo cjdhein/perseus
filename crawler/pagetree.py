@@ -147,7 +147,6 @@ class PageTree:
             # crawlTypes:
             #   0: full crawl (urls, title, keyword)
             #   1: fast crawl (title, keyword)
-            pdb.set_trace()
             ret = wc.crawlPool(thisCrawl,0)
 
             # If this is the root node and it errored, return 2 (fatal error on crawl)
@@ -179,9 +178,10 @@ class PageTree:
     # and adds them to nextCrawl
     def buildNodes(self,parentNode,nextCrawl):
         urls = parentNode.urlList
+        
 
         for url in urls:
-            newNode = PageNode(parentNode,self.getUID(),url,self.currentLevel)
+            newNode = PageNode(parentNode,self.getUID(),url,parentNode.level + 1)
             parentNode.nodeList.append(newNode)
             
             if self.currentLevel-1 < self.limit:
