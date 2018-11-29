@@ -85,6 +85,7 @@ crawlerApp.controller('menuController', function($scope, $cookieStore, $http, $l
 	//TODO: Send request to server to retrieve graph from search terms
 	$scope.submit = function(){
 		document.getElementById("progress").style.display = "block";
+		document.getElementById("error").style.display = "none";
 
 		if(!$scope.data.start || !$scope.data.search || !$scope.data.limit || !Number.isInteger($scope.data.limit)) {
 			return;
