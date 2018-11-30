@@ -57,7 +57,6 @@ class WebParser(object):
         except:
             e = sys.exc_info()
             sys.stderr.write(e[1])
-            sys.exit(1)
 
     # Remove all links that end in invalid extensions
     def _scrubExtensions(links, baseUrl):
