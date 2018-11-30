@@ -6,7 +6,7 @@ const shortid = require("shortid");
 const execFile = require("child_process").execFile;
 
 // Define constants
-const PORT = 3004;
+const PORT = 3005;
 const DFS_LIMIT = 100; // page limit for breadth-first search
 const BFS_LIMIT = 3; // page limit for depth-first search
 const DFS_SEARCH = 1; // DO NOT EDIT - search value sent to python web crawler for dfs
@@ -14,7 +14,7 @@ const BFS_SEARCH = 2; // DO NOT EDIT - search value sent to python web crawler f
 const PATH_LOGS = "/public/log_files/"; // Path where log files are stored
 const CWD_CRAWLER = "../crawler"; // Path to python script
 const PYTHON_SCRIPT_NAME = "core.py";
-const TIMEOUT = 60000; // kill child process after this many milliseconds
+const TIMEOUT = 60000 * 3; // kill child process after this many milliseconds
 const SIGNAL = "SIGKILL"; // signal to send to terminate child process
 
 // ERR_TEXT is the text of the error log file sent by send_error_xml_response
