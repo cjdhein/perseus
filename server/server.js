@@ -6,7 +6,7 @@ const shortid = require("shortid");
 const execFile = require("child_process").execFile;
 
 // Define constants
-const PORT = 3005;
+const PORT = 3009;
 const DFS_LIMIT = 100; // page limit for breadth-first search
 const BFS_LIMIT = 3; // page limit for depth-first search
 const DFS_SEARCH = 1; // DO NOT EDIT - search value sent to python web crawler for dfs
