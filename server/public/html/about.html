@@ -3,13 +3,21 @@
 
 <h3 class="centered">Welcome to the graphical web crawler!</h3>
 
-<p>To operate the graphical web crawler, provide the URL for the webpage you want to start searching from. Also select whether the crawler should perform a depth-first or bredth-first search.</p>
+<p>The graphical web crawler begins at a designated starting webpage and navigates to linked pages. The results of the web crawler are displayed in a graphical format. To begin, fill out the form and click submit.</p>
 
-<p>For a depth-first search, the numeric limit is 100 pages. For a breadth-first search, the numeric limit is 3 levels, due to the large number of pages that may be visited on a single level.</p>
+<p><strong>Starting webpage:</strong> Provide the URL for the webpage to start crawling from.</p>
 
-<p>Please be advised that the crawler may take some time to visit the requested number of pages or levels, especially when performing a breadth-first search. To this end, we imposed a 60 second limit on all crawler searches. If a search does not complete in this time, you will be notified and can perform another search.</p>
+<p><strong>Search method:</strong> Choose either depth-first or breadth-first search.</p>
 
-<p>Providing a keyword is optional. If the crawler visits a webpage that contains the keyword, the crawler will halt its search. The webpage that contained the keyword will be highlighted in the graph.</p>
+<p><strong>Numeric limit:</strong> For a depth-first search, the numeric limit is 100 pages. For a breadth-first search, the numeric limit is 3 levels. (Due to the large number of pages visited by a breadth-first search, we suggest limiting the numeric limit to 1.)</p>
+
+<p><strong>Keyword:</strong> Providing a keyword is optional. If the web crawler visits a webpage that contains the keyword, the traversal will stop. The webpage that contained the keyword will be highlighted in the graph.</p>
+
+<p><strong>Time limit:</strong> Please be advised that the crawler may take some time to visit the requested number of pages or levels, especially when performing a breadth-first search. To this end, we imposed a <strong>3 minute</strong> limit on all crawler searches. If a search does not complete in this time, you will be notified and can perform another search.</p>
+
+<p><strong>Graph manipulation:</strong> After the graph is displayed, it can be manipulated: drag to pan, scoll to zoom, and click on a node to see more information about that page.</p>
+
+<p><strong>Previous Searches: </strong> Your 10 most recent searches are stored locally using cookies. You can view these by clicking the "View Previous Searches" link.</p>
 
 <h1 class="display-1 centered">About</h1>
 
