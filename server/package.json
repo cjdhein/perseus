@@ -8,8 +8,8 @@
   },
   "author": "Yoav Gil",
   "dependencies": {
-    "body-parser": "^1.13.3",
-    "express": "^4.13.2",
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.11.3",
     "mysql": "^2.8.0",
