@@ -9,7 +9,7 @@
   "author": "Yoav Gil",
   "dependencies": {
     "body-parser": "^1.13.3",
-    "express": "^4.13.2",
+    "express": "^4.17.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.11.3",
     "mysql": "^2.8.0",
